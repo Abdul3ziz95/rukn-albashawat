@@ -66,7 +66,7 @@ main{max-width:1100px;margin:auto;padding:1.5rem 1rem 6rem}
 .size{font-family:inherit;font-size:.8rem;font-weight:700;color:var(--brown2);background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:.35rem .5rem;outline:none}
 .c-bot{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:auto}
 .price{background:linear-gradient(180deg,var(--gold2),var(--gold));color:var(--dark);border-radius:10px;padding:.25rem .8rem;font-weight:900;font-size:.85rem}
-/* ===== زرا الزيادة والإنقاص داخل البطاقة ===== */
+/* ===== زرا الزيادة والإنقاص ===== */
 .step{display:flex;align-items:center;gap:.4rem;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:.28rem .4rem;transition:.2s}
 .step.on{border-color:var(--gold);box-shadow:0 0 0 3px #c9973b22}
 .step .st{width:30px;height:30px;border:none;border-radius:9px;font-size:1.1rem;font-weight:900;cursor:pointer;transition:.15s;font-family:inherit;line-height:1}
@@ -77,7 +77,7 @@ main{max-width:1100px;margin:auto;padding:1.5rem 1rem 6rem}
 .step .dec:hover{background:#e5d3ba}
 .step .dec:active{transform:scale(.9)}
 .step .qnum{min-width:22px;text-align:center;font-weight:900;color:var(--brown);font-size:.95rem}
-/* ===== أسهم التنقل بين الأقسام ===== */
+/* ===== أسهم التنقل ===== */
 .sec-nav{display:flex;gap:.8rem;margin-top:1.5rem}
 .nav-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:.6rem;background:#fff;border:1.5px solid var(--line);
   border-radius:14px;padding:.6rem .8rem;cursor:pointer;transition:.2s;font-family:inherit}
@@ -87,6 +87,23 @@ main{max-width:1100px;margin:auto;padding:1.5rem 1rem 6rem}
 .nav-btn .lbl small{display:block;font-size:.65rem;color:var(--muted);font-weight:700}
 .nav-btn .lbl b{font-size:.88rem;color:var(--brown2);font-weight:900}
 .nav-btn:hover .lbl b{color:var(--brown)}
+/* ===== الرسالة الترحيبية ===== */
+#welcome{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:1rem;
+  background:rgba(26,10,6,.75);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:.4s}
+#welcome.show{opacity:1;pointer-events:auto}
+.w-card{background:var(--cream);border-radius:22px;max-width:440px;width:100%;padding:1.5rem 1.2rem 1.3rem;text-align:center;
+  position:relative;box-shadow:0 24px 70px rgba(0,0,0,.55);border:2px solid var(--gold);max-height:92vh;overflow-y:auto;
+  transform:translateY(26px) scale(.94);transition:.45s cubic-bezier(.2,.9,.3,1.15)}
+#welcome.show .w-card{transform:translateY(0) scale(1)}
+.w-card img{width:100%;border-radius:16px;border:1px solid var(--line);background:#fff}
+.w-card h2{color:var(--brown);font-weight:900;font-size:1.3rem;margin:.9rem 0 .3rem}
+.w-card p{color:var(--muted);font-weight:700;font-size:.88rem;line-height:1.9}
+.w-btn{margin-top:1.1rem;background:var(--brown);color:#fff;border:none;border-radius:50px;padding:.75rem 2.2rem;
+  font-family:inherit;font-weight:900;font-size:.95rem;cursor:pointer;transition:.2s}
+.w-btn:hover{background:var(--gold);color:var(--dark)}
+.w-close{position:absolute;top:.7rem;left:.7rem;width:34px;height:34px;border-radius:50%;border:none;
+  background:#00000012;color:var(--brown);font-weight:900;cursor:pointer;font-size:1rem;transition:.2s}
+.w-close:hover{background:#00000022;transform:rotate(90deg)}
 /* ===== سلة الطلبات ===== */
 #overlay{position:fixed;inset:0;background:rgba(30,12,8,.5);opacity:0;pointer-events:none;transition:.3s;z-index:60}
 #overlay.show{opacity:1;pointer-events:auto}
@@ -133,6 +150,19 @@ footer .note{font-size:.72rem;color:#c9ae86;margin-top:1rem}
 </style>
 </head>
 <body>
+
+<!-- 💌 الرسالة الترحيبية (تظهر مرة واحدة فقط) -->
+<div id="welcome">
+  <div class="w-card">
+    <button class="w-close" onclick="closeWelcome()" aria-label="إغلاق">✕</button>
+    <!-- 📁 ضع صورة الترحيب باسم welcome.png في نفس مجلد الملف -->
+    <img src="welcome.png" alt="مطاعم ركن البشوات">
+    <h2>أهلاً وسهلاً بكم 🎩</h2>
+    <p>نرحّب بكم في <b>ركن البشوات</b> — أصل الأكل المصري الشعبي.<br>
+    تصفّحوا أقسام المنيو، اختاروا أصنافكم المفضلة،<br>ويصلنا طلبكم مباشرة عبر واتساب. 🛵</p>
+    <button class="w-btn" onclick="closeWelcome()">🥙 تصفّح المنيو</button>
+  </div>
+</div>
 
 <header class="topbar">
   <div class="brand">
@@ -191,6 +221,18 @@ footer .note{font-size:.72rem;color:#c9ae86;margin-top:1rem}
 <script>
 const WA = '966561365019';
 const SIZES = ['صغير','وسط','كبير'];
+
+/* ===== الرسالة الترحيبية — تظهر مرة واحدة فقط ===== */
+(function(){
+  /* 💡 لعرضها مرة كل جلسة بدلاً من مرة واحدة نهائياً: استبدل localStorage بـ sessionStorage */
+  if(!localStorage.getItem('rb_welcome_seen')){
+    setTimeout(()=> document.getElementById('welcome').classList.add('show'), 700);
+    localStorage.setItem('rb_welcome_seen','1');
+  }
+})();
+function closeWelcome(){ document.getElementById('welcome').classList.remove('show'); }
+/* الإغلاق بالضغط خارج البطاقة */
+document.getElementById('welcome').addEventListener('click', e=>{ if(e.target.id==='welcome') closeWelcome(); });
 
 const MENU = [
 {t:'الكشري',i:'🍚',items:[
@@ -259,7 +301,6 @@ MENU.forEach((sec,si)=>{
     g.appendChild(card);
   });
 
-  /* ➡️ ⬅️ سهما التنقل بين الأقسام */
   const n = MENU.length;
   const prev = (si-1+n)%n, next = (si+1)%n;
   const nav = document.createElement('div');
@@ -277,7 +318,7 @@ MENU.forEach((sec,si)=>{
   main.appendChild(s);
 });
 
-/* ===== زرا + و − داخل البطاقات ===== */
+/* ===== زرا + و − ===== */
 document.addEventListener('click', e=>{
   const b = e.target.closest('.st'); if(!b) return;
   const step = b.closest('.step');
@@ -291,10 +332,8 @@ document.addEventListener('click', e=>{
   if(cur.qty<=0) cart.delete(key); else cart.set(key,cur);
   updateCart();
 });
-/* عند تغيير الحجم يتحدّث العدّاد */
 document.addEventListener('change', e=>{ if(e.target.matches('.size')) refreshSteps(); });
 
-/* مزامنة عدّادات البطاقات مع السلة */
 function refreshSteps(){
   document.querySelectorAll('.step').forEach(st=>{
     const it = MENU[+st.dataset.si].items[+st.dataset.ii];
@@ -306,13 +345,11 @@ function refreshSteps(){
   });
 }
 
-/* الضغط على أسهم التنقل */
 main.addEventListener('click', e=>{
   const b = e.target.closest('.nav-btn'); if(!b) return;
   showSection(+b.dataset.go, true);
 });
 
-/* ===== عرض قسم واحد فقط ===== */
 function showSection(si, scroll=false){
   currentSection = si;
   document.querySelectorAll('.section').forEach((s,i)=> s.style.display = (i===si)? '' : 'none');
@@ -324,7 +361,6 @@ function showSection(si, scroll=false){
 }
 showSection(0);
 
-/* ===== البحث ===== */
 search.addEventListener('input', e=>{
   const q = e.target.value.trim();
   if(!q){ showSection(currentSection); return; }
