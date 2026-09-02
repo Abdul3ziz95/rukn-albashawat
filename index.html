@@ -50,7 +50,6 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--ink);
 .chip.active,.chip:hover{background:var(--brown);color:#fff;border-color:var(--brown)}
 /* ===== الأقسام ===== */
 main{max-width:1100px;margin:auto;padding:1.5rem 1rem 6rem}
-/* 👇 هامش التمرير أعلى من مجموع ارتفاع الشريط العلوي + التصنيفات */
 .section{margin-bottom:2.6rem;scroll-margin-top:160px}
 .ribbon{background:linear-gradient(180deg,var(--brown2),var(--brown));color:#fff;padding:.55rem 2.4rem;border-radius:.5rem;
   position:relative;font-size:1.2rem;font-weight:900;display:inline-block;box-shadow:0 6px 16px rgba(61,21,15,.3);margin-bottom:1.2rem}
@@ -69,6 +68,16 @@ main{max-width:1100px;margin:auto;padding:1.5rem 1rem 6rem}
 .price{background:linear-gradient(180deg,var(--gold2),var(--gold));color:var(--dark);border-radius:10px;padding:.25rem .8rem;font-weight:900;font-size:.85rem}
 .add{background:var(--brown);color:#fff;border:none;border-radius:10px;padding:.4rem 1rem;font-family:inherit;font-weight:800;font-size:.82rem;cursor:pointer;transition:.2s}
 .add:hover{background:var(--gold);color:var(--dark)}
+/* ===== أسهم التنقل بين الأقسام ===== */
+.sec-nav{display:flex;gap:.8rem;margin-top:1.5rem}
+.nav-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:.6rem;background:#fff;border:1.5px solid var(--line);
+  border-radius:14px;padding:.6rem .8rem;cursor:pointer;transition:.2s;font-family:inherit}
+.nav-btn:hover{border-color:var(--brown);transform:translateY(-2px);box-shadow:0 6px 16px rgba(77,35,27,.14)}
+.nav-btn .arr{font-size:1.4rem;color:var(--gold);font-weight:900;line-height:1}
+.nav-btn .lbl{text-align:center}
+.nav-btn .lbl small{display:block;font-size:.65rem;color:var(--muted);font-weight:700}
+.nav-btn .lbl b{font-size:.88rem;color:var(--brown2);font-weight:900}
+.nav-btn:hover .lbl b{color:var(--brown)}
 /* ===== سلة الطلبات ===== */
 #overlay{position:fixed;inset:0;background:rgba(30,12,8,.5);opacity:0;pointer-events:none;transition:.3s;z-index:60}
 #overlay.show{opacity:1;pointer-events:auto}
@@ -236,7 +245,30 @@ MENU.forEach((sec,si)=>{
       </div>`;
     g.appendChild(card);
   });
+
+  /* ➡️ ⬅️ سهما التنقل بين الأقسام */
+  const n = MENU.length;
+  const prev = (si-1+n)%n, next = (si+1)%n;
+  const nav = document.createElement('div');
+  nav.className='sec-nav';
+  nav.innerHTML = `
+    <button class="nav-btn" data-go="${prev}">
+      <span class="arr">→</span>
+      <span class="lbl"><small>القسم السابق</small><b>${MENU[prev].i} ${MENU[prev].t}</b></span>
+    </button>
+    <button class="nav-btn" data-go="${next}">
+      <span class="lbl"><small>القسم التالي</small><b>${MENU[next].i} ${MENU[next].t}</b></span>
+      <span class="arr">←</span>
+    </button>`;
+  s.appendChild(nav);
+
   main.appendChild(s);
+});
+
+/* الضغط على أسهم التنقل */
+main.addEventListener('click', e=>{
+  const b = e.target.closest('.nav-btn'); if(!b) return;
+  showSection(+b.dataset.go, true);
 });
 
 /* ===== عرض قسم واحد فقط مع التمرير للافتة القسم ===== */
@@ -246,10 +278,7 @@ function showSection(si, scroll=false){
   document.querySelectorAll('.chip').forEach((c,i)=> c.classList.toggle('active', i===si));
   if(scroll){
     const target = document.getElementById('sec-'+si);
-    // تأخير بسيط لضمان ظهور القسم قبل التمرير
-    requestAnimationFrame(()=>{
-      target.scrollIntoView({behavior:'smooth', block:'start'});
-    });
+    requestAnimationFrame(()=>{ target.scrollIntoView({behavior:'smooth', block:'start'}); });
   }
 }
 showSection(0);
