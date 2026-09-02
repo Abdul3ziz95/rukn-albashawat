@@ -64,10 +64,19 @@ main{max-width:1100px;margin:auto;padding:1.5rem 1rem 6rem}
 .c-top h4{font-size:.95rem;font-weight:800;line-height:1.5}
 .cal{flex-shrink:0;background:#fff6e6;border:1px solid #f0dcb8;color:#a06b1c;border-radius:50px;padding:.1rem .6rem;font-size:.68rem;font-weight:800}
 .size{font-family:inherit;font-size:.8rem;font-weight:700;color:var(--brown2);background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:.35rem .5rem;outline:none}
-.c-bot{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+.c-bot{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:auto}
 .price{background:linear-gradient(180deg,var(--gold2),var(--gold));color:var(--dark);border-radius:10px;padding:.25rem .8rem;font-weight:900;font-size:.85rem}
-.add{background:var(--brown);color:#fff;border:none;border-radius:10px;padding:.4rem 1rem;font-family:inherit;font-weight:800;font-size:.82rem;cursor:pointer;transition:.2s}
-.add:hover{background:var(--gold);color:var(--dark)}
+/* ===== زرا الزيادة والإنقاص داخل البطاقة ===== */
+.step{display:flex;align-items:center;gap:.4rem;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:.28rem .4rem;transition:.2s}
+.step.on{border-color:var(--gold);box-shadow:0 0 0 3px #c9973b22}
+.step .st{width:30px;height:30px;border:none;border-radius:9px;font-size:1.1rem;font-weight:900;cursor:pointer;transition:.15s;font-family:inherit;line-height:1}
+.step .inc{background:var(--brown);color:#fff}
+.step .inc:hover{background:var(--gold);color:var(--dark)}
+.step .inc:active{transform:scale(.9)}
+.step .dec{background:#f3e7d7;color:var(--brown2)}
+.step .dec:hover{background:#e5d3ba}
+.step .dec:active{transform:scale(.9)}
+.step .qnum{min-width:22px;text-align:center;font-weight:900;color:var(--brown);font-size:.95rem}
 /* ===== أسهم التنقل بين الأقسام ===== */
 .sec-nav{display:flex;gap:.8rem;margin-top:1.5rem}
 .nav-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:.6rem;background:#fff;border:1.5px solid var(--line);
@@ -241,7 +250,11 @@ MENU.forEach((sec,si)=>{
       ${multi? `<select class="size">${prices.map((p,i)=>`<option value="${i}">${SIZES[i]} • ${p} ريال</option>`).join('')}</select>`:''}
       <div class="c-bot">
         <div class="price">${multi? 'من '+prices[0]+' ريال' : prices[0]+' ريال'}</div>
-        <button class="add" data-si="${si}" data-ii="${ii}">أضف +</button>
+        <div class="step" data-si="${si}" data-ii="${ii}">
+          <button class="st inc" aria-label="زيادة">+</button>
+          <span class="qnum">0</span>
+          <button class="st dec" aria-label="إنقاص">−</button>
+        </div>
       </div>`;
     g.appendChild(card);
   });
@@ -261,9 +274,37 @@ MENU.forEach((sec,si)=>{
       <span class="arr">←</span>
     </button>`;
   s.appendChild(nav);
-
   main.appendChild(s);
 });
+
+/* ===== زرا + و − داخل البطاقات ===== */
+document.addEventListener('click', e=>{
+  const b = e.target.closest('.st'); if(!b) return;
+  const step = b.closest('.step');
+  const it = MENU[+step.dataset.si].items[+step.dataset.ii];
+  let size='', price = it[1][0];
+  const sel = step.closest('.card').querySelector('select');
+  if(sel){ size = SIZES[+sel.value]; price = it[1][+sel.value]; }
+  const key = it[0]+'|'+size;
+  const cur = cart.get(key) || {name:it[0], size, price, qty:0};
+  b.classList.contains('inc') ? cur.qty++ : cur.qty--;
+  if(cur.qty<=0) cart.delete(key); else cart.set(key,cur);
+  updateCart();
+});
+/* عند تغيير الحجم يتحدّث العدّاد */
+document.addEventListener('change', e=>{ if(e.target.matches('.size')) refreshSteps(); });
+
+/* مزامنة عدّادات البطاقات مع السلة */
+function refreshSteps(){
+  document.querySelectorAll('.step').forEach(st=>{
+    const it = MENU[+st.dataset.si].items[+st.dataset.ii];
+    let size=''; const sel = st.closest('.card').querySelector('select');
+    if(sel) size = SIZES[+sel.value];
+    const q = (cart.get(it[0]+'|'+size)||{}).qty || 0;
+    st.querySelector('.qnum').textContent = q;
+    st.classList.toggle('on', q>0);
+  });
+}
 
 /* الضغط على أسهم التنقل */
 main.addEventListener('click', e=>{
@@ -271,7 +312,7 @@ main.addEventListener('click', e=>{
   showSection(+b.dataset.go, true);
 });
 
-/* ===== عرض قسم واحد فقط مع التمرير للافتة القسم ===== */
+/* ===== عرض قسم واحد فقط ===== */
 function showSection(si, scroll=false){
   currentSection = si;
   document.querySelectorAll('.section').forEach((s,i)=> s.style.display = (i===si)? '' : 'none');
@@ -297,17 +338,6 @@ search.addEventListener('input', e=>{
 
 /* ===== السلة ===== */
 const cart = new Map();
-document.addEventListener('click', e=>{
-  const b = e.target.closest('.add'); if(!b) return;
-  const it = MENU[+b.dataset.si].items[+b.dataset.ii];
-  let size='', price = it[1][0];
-  const sel = b.closest('.card').querySelector('select');
-  if(sel){ size = SIZES[+sel.value]; price = it[1][+sel.value]; }
-  const key = it[0]+'|'+size;
-  const cur = cart.get(key) || {name:it[0], size, price, qty:0};
-  cur.qty++; cart.set(key,cur);
-  updateCart(); toast('تمت الإضافة إلى طلبك ✅');
-});
 document.getElementById('dItems').addEventListener('click', e=>{
   const b = e.target.closest('.q'); if(!b) return;
   const item = cart.get(b.dataset.k);
@@ -328,6 +358,7 @@ function updateCart(){
       <div class="ci-total">${i.qty*i.price} ريال</div>
     </div>`).join('')
   : `<div class="empty">🛒<br>سلتك فارغة..<br>أضف أصنافك المفضلة!</div>`;
+  refreshSteps();
 }
 function openCart(){ document.getElementById('drawer').classList.add('show'); document.getElementById('overlay').classList.add('show'); }
 function closeCart(){ document.getElementById('drawer').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
