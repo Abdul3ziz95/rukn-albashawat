@@ -31,7 +31,7 @@ header a{color:#e6c37c;font-size:.75rem;text-decoration:none}
 .ob{font-size:.8rem;font-weight:700;color:#8a6f63;line-height:1.9}
 .oa{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center}
 .empty{text-align:center;color:#8a6f63;font-weight:800;padding:2rem;line-height:2}
-#trackOv{position:fixed;inset:0;background:rgba(26,10,6,.75);display:flex;align-items:center;justify-content:center;z-index:100;padding:1rem}
+#trackOv{position:fixed;inset:0;background:rgba(26,10,6,.75);display:none;align-items:center;justify-content:center;z-index:100;padding:1rem}
 .tc{background:#f7f1e6;border:2px solid #c9973b;border-radius:20px;max-width:420px;width:100%;padding:1.2rem;max-height:90vh;overflow-y:auto;text-align:center}
 .tc h2{color:#4d231b;font-size:1.1rem}
 .tl{display:flex;flex-direction:column;gap:.4rem;margin:.8rem 0;text-align:right}
@@ -64,7 +64,7 @@ header a{color:#e6c37c;font-size:.75rem;text-decoration:none}
 <div id="list"></div>
 </div>
 
-<div id="trackOv" style="display:none"><div class="tc">
+<div id="trackOv"><div class="tc">
 <h2 id="trT">تتبع</h2><div class="tl" id="tl"></div><div id="trR"></div><div id="cmap"></div>
 <br><button class="btn" onclick="closeTrack()">إغلاق ✕</button>
 </div></div>
@@ -72,59 +72,56 @@ header a{color:#e6c37c;font-size:.75rem;text-decoration:none}
 <div id="toast"><span id="toastMsg"></span></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const CH='bashawat-x9f3k7q2',CRYPT_PASS='bashawat-secure-2026',ADMIN_PASS='1234';
+const CH='bashawat-x9f3k7q2', ADMIN_PASS='1234';
 const $=s=>document.getElementById(s);
-let _k;async function key(){if(_k)return _k;const kb=await crypto.subtle.importKey('raw',new TextEncoder().encode(CRYPT_PASS),'PBKDF2',false,['deriveKey']);_k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:new TextEncoder().encode(CH),iterations:50000,hash:'SHA-256'},kb,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);return _k}
-async function enc(o){const k=await key(),iv=crypto.getRandomValues(new Uint8Array(12));const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},k,new TextEncoder().encode(JSON.stringify(o))));const b=new Uint8Array(12+ct.length);b.set(iv);b.set(ct,12);return btoa(String.fromCharCode(...b))}
-async function dec(s){try{const k=await key(),bin=Uint8Array.from(atob(s),c=>c.charCodeAt(0));return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:bin.slice(0,12)},k,bin.slice(12))))}catch(e){return null}}
-async function send(e){e.ts=Date.now();await fetch('https://ntfy.sh/'+CH,{method:'POST',body:await enc(e)})}
+async function send(e){ e.ts=Date.now(); await fetch('https://ntfy.sh/'+CH,{method:'POST',body:JSON.stringify(e)}); }
 const S=new Map();
 const ST={pending:['⏳ جديد','#c9973b'],approved:['✅ مؤكد','#2e7d32'],preparing:['👨 تحضير','#e65100'],ready:['📦 جاهز','#1565c0'],delivering:['🛵 توصيل','#6a1b9a'],delivered:['🎉 سُلّم','#33691e'],rejected:['❌ اعتذار','#b71c1c']};
-(function(){const es=new EventSource('https://ntfy.sh/'+CH+'/sse?since=12h');
+(function(){ const es=new EventSource('https://ntfy.sh/'+CH+'/sse?since=12h');
 es.onopen=()=>{const c=$('conn');c.textContent='🟢 متصل';c.classList.add('on')};
 es.onerror=()=>{const c=$('conn');c.textContent='🔴 اتصال…';c.classList.remove('on')};
-es.onmessage=async m=>{const e=await dec(m.data.message);if(!e)return;
-if(e.t==='order'&&!S.has(e.o.id)){S.set(e.o.id,{o:e.o,status:'pending',loc:null,ts:e.ts});beep();toast('🆕 طلب جديد #'+e.o.id)}
-else if(e.t==='status'){const r=S.get(e.id);if(r){r.status=e.s;r.reason=e.reason||''}}
-else if(e.t==='loc'){const r=S.get(e.id);if(r){r.loc=[e.lat,e.lng];moveMk()}}
-render();updateTrack();}})();
-function render(){const l=[...S.values()].sort((a,b)=>(b.ts||0)-(a.ts||0));
-const c=s=>l.filter(r=>r.status===s).length;
-const rev=l.filter(r=>r.status==='delivered').reduce((s,r)=>s+r.o.total,0);
-$('stats').innerHTML=`<div class="st">جديدة<b>${c('pending')}</b></div><div class="st">تحضير<b>${c('approved')+c('preparing')}</b></div><div class="st">جاهزة<b>${c('ready')}</b></div><div class="st">توصيل<b>${c('delivering')}</b></div><div class="st">مبيعات<b>${rev} ريال</b></div>`;
-$('list').innerHTML=l.length?l.map(r=>{const[lb,cl]=ST[r.status];let a='';
-if(r.status==='pending')a=`<button class="btn sm ok" data-a="approved" data-id="${r.o.id}">✅ موافقة</button><button class="btn sm no" data-a="reject" data-id="${r.o.id}">❌ رفض</button>`;
-else if(r.status==='approved')a=`<button class="btn sm" data-a="preparing" data-id="${r.o.id}">👨 بدء التحضير</button>`;
-else if(r.status==='preparing')a=`<button class="btn sm" data-a="ready" data-id="${r.o.id}">📦 الطلب جاهز</button>`;
-else if(r.status==='ready')a=`<span class="sc" style="background:#1565c0">⏳ بانتظار سائق</span>`;
-else if(r.status==='delivering')a=`<button class="btn sm map" data-a="map" data-id="${r.o.id}">🗺️ تتبع</button><button class="btn sm ok" data-a="delivered" data-id="${r.o.id}">🎉 تسليم</button>`;
-return `<div class="oc"><div class="oh">#${r.o.id} • ${r.o.total} ريال <span class="sc" style="background:${cl}">${lb}</span></div><div class="ob">👤 ${r.o.name} ${r.o.phone?'📞 '+r.o.phone:''}<br>📍 ${r.o.addr||'—'}${r.o.notes?'<br>📝 '+r.o.notes:''}<br>🧾 ${r.o.items.map(x=>x.q+'× '+x.n).join('، ')}</div><div class="oa">${a}</div></div>`}).join('')
-:`<div class="empty">لا طلبات بعد..<br>أبقِ الصفحة مفتوحة 🔔</div>`}
-$('list').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-const id=b.dataset.id,a=b.dataset.a;
-if(a==='reject'){const r=prompt('سبب الرفض:','غير متوفر حالياً')||'';send({t:'status',id,s:'rejected',reason:r})}
-else if(a==='map')openTrack(id);
-else if(a)send({t:'status',id,s:a})});
+es.onmessage=m=>{ let e; try{e=JSON.parse(m.data.message)}catch(err){return}
+ if(e.t==='order'&&!S.has(e.o.id)){ S.set(e.o.id,{o:e.o,status:'pending',loc:null,ts:e.ts}); beep(); toast('🆕 طلب جديد #'+e.o.id); }
+ else if(e.t==='status'){ const r=S.get(e.id); if(r){r.status=e.s;r.reason=e.reason||''} }
+ else if(e.t==='loc'){ const r=S.get(e.id); if(r){r.loc=[e.lat,e.lng]; moveMk()} }
+ render(); updateTrack(); }; })();
+function render(){ const l=[...S.values()].sort((a,b)=>(b.ts||0)-(a.ts||0));
+ const c=s=>l.filter(r=>r.status===s).length;
+ const rev=l.filter(r=>r.status==='delivered').reduce((s,r)=>s+r.o.total,0);
+ $('stats').innerHTML=`<div class="st">جديدة<b>${c('pending')}</b></div><div class="st">تحضير<b>${c('approved')+c('preparing')}</b></div><div class="st">جاهزة<b>${c('ready')}</b></div><div class="st">توصيل<b>${c('delivering')}</b></div><div class="st">مبيعات<b>${rev} ريال</b></div>`;
+ $('list').innerHTML=l.length?l.map(r=>{ const[lb,cl]=ST[r.status]; let a='';
+  if(r.status==='pending')a=`<button class="btn sm ok" data-a="approved" data-id="${r.o.id}">✅ موافقة</button><button class="btn sm no" data-a="reject" data-id="${r.o.id}">❌ رفض</button>`;
+  else if(r.status==='approved')a=`<button class="btn sm" data-a="preparing" data-id="${r.o.id}">👨 بدء التحضير</button>`;
+  else if(r.status==='preparing')a=`<button class="btn sm" data-a="ready" data-id="${r.o.id}">📦 الطلب جاهز</button>`;
+  else if(r.status==='ready')a=`<span class="sc" style="background:#1565c0">⏳ بانتظار سائق</span>`;
+  else if(r.status==='delivering')a=`<button class="btn sm map" data-a="map" data-id="${r.o.id}">🗺️ تتبع</button><button class="btn sm ok" data-a="delivered" data-id="${r.o.id}">🎉 تسليم</button>`;
+  return `<div class="oc"><div class="oh">#${r.o.id} • ${r.o.total} ريال <span class="sc" style="background:${cl}">${lb}</span></div><div class="ob">👤 ${r.o.name} ${r.o.phone?'📞 '+r.o.phone:''}<br>📍 ${r.o.addr||'—'}${r.o.notes?'<br>📝 '+r.o.notes:''}<br>🧾 ${r.o.items.map(x=>x.q+'× '+x.n).join('، ')}</div><div class="oa">${a}</div></div>`; }).join('')
+ :`<div class="empty">لا طلبات بعد..<br>أبقِ الصفحة مفتوحة 🔔</div>`;}
+$('list').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return;
+ const id=b.dataset.id, a=b.dataset.a;
+ if(a==='reject'){ const r=prompt('سبب الرفض:','غير متوفر حالياً')||''; send({t:'status',id,s:'rejected',reason:r}); }
+ else if(a==='map')openTrack(id);
+ else if(a)send({t:'status',id,s:a}); });
 let trackId=null,mo=null,mk=null;
 const TL=['pending','approved','preparing','ready','delivering','delivered'];
 const LB={pending:'⏳ بانتظار الموافقة',approved:'✅ تم التأكيد',preparing:'👨 جاري التحضير',ready:'📦 جاهز',delivering:'🛵 في الطريق',delivered:'🎉 تم التسليم'};
-function openTrack(id){trackId=id;$('trackOv').style.display='flex';updateTrack()}
-function closeTrack(){$('trackOv').style.display='none';trackId=null;if(mo){mo.remove();mo=null;mk=null}const m=$('cmap');m.style.display='none'}
-function updateTrack(){if($('trackOv').style.display==='none'||!trackId)return;const r=S.get(trackId);if(!r)return;
-$('trT').textContent='طلب #'+r.o.id+' — '+r.o.total+' ريال';
-if(r.status==='rejected'){$('trR').textContent='❌ مرفوض'+(r.reason?': '+r.reason:'');$('tl').innerHTML='';return}
-$('trR').textContent='';const i=TL.indexOf(r.status);
-$('tl').innerHTML=TL.map((s,x)=>`<div class="tli ${x<i?'done':x===i?'now':''}">${x<=i?'✓':'•'} ${LB[s]}</div>`).join('');
-if(r.status==='delivering'&&r.loc){$('cmap').style.display='block';
-if(!mo){mo=L.map('cmap',{zoomControl:false}).setView(r.loc,15);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mo);if(r.o.lat!=null)L.marker([r.o.lat,r.o.lng]).addTo(mo).bindPopup('العميل 🏠')}
-if(!mk)mk=L.marker(r.loc,{icon:L.divIcon({className:'drv',html:'🛵',iconSize:[28,28]})}).addTo(mo);else mk.setLatLng(r.loc);mo.panTo(r.loc)}}
-function moveMk(){updateTrack()}
-function beep(){try{const c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;g.gain.value=.25;o.start();setTimeout(()=>{o.stop();c.close()},350)}catch(e){}}
-let tT;function toast(m){const s=$('toastMsg');s.textContent=m;s.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>s.classList.remove('show'),1800)}
-function adminLogin(){if($('adminPass').value===ADMIN_PASS){sessionStorage.setItem('rb_adm','1');show()}else toast('❌ كلمة سر خاطئة')}
-function show(){$('gate').hidden=true;$('dash').hidden=false;render()}
-$('logout').onclick=()=>{sessionStorage.removeItem('rb_adm');location.reload()};
-$('adminPass').addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin()});
+function openTrack(id){ trackId=id; $('trackOv').style.display='flex'; updateTrack(); }
+function closeTrack(){ $('trackOv').style.display='none'; trackId=null; if(mo){mo.remove();mo=null;mk=null} $('cmap').style.display='none'; }
+function updateTrack(){ if($('trackOv').style.display==='none'||!trackId)return; const r=S.get(trackId); if(!r)return;
+ $('trT').textContent='طلب #'+r.o.id+' — '+r.o.total+' ريال';
+ if(r.status==='rejected'){ $('trR').textContent='❌ مرفوض'+(r.reason?': '+r.reason:''); $('tl').innerHTML=''; return; }
+ $('trR').textContent=''; const i=TL.indexOf(r.status);
+ $('tl').innerHTML=TL.map((s,x)=>`<div class="tli ${x<i?'done':x===i?'now':''}">${x<=i?'✓':'•'} ${LB[s]}</div>`).join('');
+ if(r.status==='delivering'&&r.loc){ $('cmap').style.display='block';
+  if(!mo){ mo=L.map('cmap',{zoomControl:false}).setView(r.loc,15); L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mo); if(r.o.lat!=null)L.marker([r.o.lat,r.o.lng]).addTo(mo).bindPopup('العميل 🏠'); }
+  if(!mk)mk=L.marker(r.loc,{icon:L.divIcon({className:'drv',html:'🛵',iconSize:[28,28]})}).addTo(mo); else mk.setLatLng(r.loc); mo.panTo(r.loc); } }
+function moveMk(){ updateTrack(); }
+function beep(){ try{ const c=new (window.AudioContext||window.webkitAudioContext)(), o=c.createOscillator(), g=c.createGain(); o.connect(g); g.connect(c.destination); o.frequency.value=880; g.gain.value=.25; o.start(); setTimeout(()=>{o.stop();c.close()},350); }catch(e){} }
+let tT; function toast(m){ const s=$('toastMsg'); s.textContent=m; s.classList.add('show'); clearTimeout(tT); tT=setTimeout(()=>s.classList.remove('show'),2000); }
+function adminLogin(){ if($('adminPass').value===ADMIN_PASS){ sessionStorage.setItem('rb_adm','1'); show(); } else toast('❌ كلمة سر خاطئة'); }
+function show(){ $('gate').hidden=true; $('dash').hidden=false; render(); }
+$('logout').onclick=()=>{ sessionStorage.removeItem('rb_adm'); location.reload(); };
+$('adminPass').addEventListener('keydown',e=>{ if(e.key==='Enter')adminLogin(); });
 if(sessionStorage.getItem('rb_adm')==='1')show();
 </script>
 </body>
