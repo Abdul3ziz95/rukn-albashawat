@@ -1,13 +1,13 @@
-/* ============ ⚙️ الإعدادات (عدّل من هنا) ============ */
-const WA='966561365019';                 // رقم واتساب الاحتياطي
-const CH='bashawat-x9f3k7q2';           // 🤫 القناة السرية (غيّرها لأي اسم عشوائي)
-const CRYPT_PASS='bashawat-secure-2026';// 🔑 مفتاح التشفير
-const ADMIN_PASS='1234';                // 🖥️ كلمة سر المدير
-const DRIVER_PASS='5678';               // 🛵 كود السائق
+/* ═══════════ ⚙️ الإعدادات (عدّل من هنا) ═══════════ */
+const WA='966561365019';                  // رقم واتساب الاحتياطي
+const CH='bashawat-x9f3k7q2';            // 🤫 القناة السرية
+const CRYPT_PASS='bashawat-secure-2026'; // 🔑 مفتاح التشفير
+const ADMIN_PASS='1234';                 // 🖥️ كلمة سر المدير
+const DRIVER_PASS='5678';                // 🛵 كود السائق
 const SIZES=['صغير','وسط','كبير'];
 const $=s=>document.getElementById(s);
 
-/* ============ 🔐 التشفير (AES-GCM) ============ */
+/* ═══════════ 🔐 التشفير AES-GCM ═══════════ */
 let _k;
 async function key(){ if(_k)return _k;
   const kb=await crypto.subtle.importKey('raw',new TextEncoder().encode(CRYPT_PASS),'PBKDF2',false,['deriveKey']);
@@ -20,12 +20,17 @@ async function enc(o){ const k=await key(), iv=crypto.getRandomValues(new Uint8A
 async function dec(s){ try{ const k=await key(), bin=Uint8Array.from(atob(s),c=>c.charCodeAt(0));
   const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:bin.slice(0,12)},k,bin.slice(12));
   return JSON.parse(new TextDecoder().decode(pt));}catch(e){return null;}}
+
+/* ═══════════ 📡 الإرسال والاستقبال اللحظي ═══════════ */
 async function send(evt){ evt.ts=Date.now();
   await fetch('https://ntfy.sh/'+CH,{method:'POST',body:await enc(evt)});}
 function listen(cb){ const es=new EventSource('https://ntfy.sh/'+CH+'/sse?since=12h');
+  es.onopen=()=>setConn(true); es.onerror=()=>setConn(false);
   es.onmessage=async m=>{ const e=await dec(m.data.message); if(e)cb(e); };}
+function setConn(on){ document.querySelectorAll('.conn').forEach(c=>{
+  c.textContent=on?'🟢 متصل':' اتصال…'; c.classList.toggle('on',on);});}
 
-/* ============ الحالة المشتركة ============ */
+/* ═══════════ الحالة المشتركة ═══════════ */
 const S={orders:new Map()};
 const ST={pending:['⏳ جديد','#c9973b'],approved:['✅ مؤكد','#2e7d32'],preparing:['👨‍ تحضير','#e65100'],ready:['📦 جاهز','#1565c0'],delivering:['🛵 توصيل','#6a1b9a'],delivered:['🎉 سُلّم','#33691e'],rejected:['❌ اعتذار','#b71c1c']};
 let view='cust', trackId=null;
@@ -35,15 +40,15 @@ function handle(e){
   else if(e.t==='status'){ const r=S.orders.get(e.id); if(r){r.status=e.s;r.reason=e.reason||'';} }
   else if(e.t==='loc'){ const r=S.orders.get(e.id); if(r){r.loc=[e.lat,e.lng]; moveMarker(e.id,r.loc);} }
   dyn();}
-/* ✅ تحديث 3: زر 📍 يظهر تلقائياً عند وجود طلب نشط */
 let dT; function dyn(){ clearTimeout(dT); dT=setTimeout(()=>{
-  if(view==='admin')renderAdmin(); if(view==='driver')renderDriver();
+  if(view==='admin')renderAdmin();
+  if(view==='driver')renderDriver();
   if(view==='cust'){updateTrack(); $('fabTrack').hidden=!activeMy();} },150);}
 function archive(){ const a={}; S.orders.forEach((r,id)=>a[id]={o:r.o,status:r.status,ts:r.ts});
   localStorage.setItem('rb_archive',JSON.stringify(a)); }
 setInterval(()=>{ if(view==='admin')archive(); },10000);
 
-/* ============ بيانات المنيو ============ */
+/* ═══════════ بيانات المنيو ═══════════ */
 const MENU=[
 {t:'الكشري',i:'🍚',items:[['طبق كشري كبير',[12],260],['طبق كشري وسط',[10],210],['طبق كشري سوبر',[8],180],['طبق كشري كمالة',[5],285],['طبق كشري عائلي وسط',[25],290],['طبق كشري عائلي كبير',[35],295],['عيش توست',[2],150],['أرز بلبن',[6],160]]},
 {t:'طواجن وحواوشي',i:'🍲',items:[['طاجن مكرونة لحم',[12],255],['طاجن مكرونة فراخ',[10],265],['طاجن مكرونة بالدجاج والموزاريلا',[12],220],['طاجن مكرونة باللحمة والموزاريلا',[14],225],['رغيف حواوشي سادة',[12],230],['رغيف حواوشي بالموزاريلا',[14],350]]},
@@ -53,7 +58,7 @@ const MENU=[
 {t:'الاضافات',i:'➕',items:[['تقلية',[2],150],['عدس',[2],150],['صلصة',[2],150]]},
 {t:'مشروبات',i:'🥤',items:[['كينزا',[3],149],['حمضيات',[3],149],['ليمون صودا',[3],149],['ماء',[1],null]]}];
 
-/* ============ بناء منيو العميل ============ */
+/* ═══════════ بناء منيو العميل ═══════════ */
 const cats=$('cats'), search=$('search'), main=$('menu'); let currentSection=0;
 MENU.forEach((sec,si)=>{
   const chip=document.createElement('button'); chip.className='chip'; chip.textContent=sec.i+' '+sec.t;
@@ -85,7 +90,7 @@ search.addEventListener('input',e=>{ const q=e.target.value.trim();
     s.style.display=[...s.querySelectorAll('.card')].some(c=>c.style.display!=='none')?'':'none';});});
 main.addEventListener('click',e=>{ const b=e.target.closest('.nav-btn'); if(b)showSection(+b.dataset.go,true);});
 
-/* ============ السلة ============ */
+/* ═══════════ السلة ═══════════ */
 const cart=new Map();
 document.addEventListener('click',e=>{
   const b=e.target.closest('.st'); if(!b)return;
@@ -111,11 +116,11 @@ function updateCart(){ let c=0,t=0; cart.forEach(i=>{c+=i.qty;t+=i.qty*i.price;}
     <div class="ci-info"><b>${i.name}${i.size?`<span class="ci-size">${i.size}</span>`:''}</b><span class="ci-price">${i.price} ريال</span></div>
     <div class="ci-ctrl"><button class="q" data-k="${k}" data-a="dec">−</button><span>${i.qty}</span><button class="q" data-k="${k}" data-a="inc">+</button></div>
     <div class="ci-total">${i.qty*i.price} ريال</div></div>`).join('')
-  :`<div class="empty">🛒<br>سلتك فارغة..</div>`; refreshSteps();}
+  :`<div class="empty">🛒<br>سلتك فارغة..<br>أضف أصنافك المفضلة!</div>`; refreshSteps();}
 function openCart(){$('drawer').classList.add('show');$('overlay').classList.add('show');}
 function closeCart(){$('drawer').classList.remove('show');$('overlay').classList.remove('show');}
 
-/* ============ 🚀 إرسال الطلب + التتبع ============ */
+/* ═══════════ 🚀 إرسال الطلب + التتبع ═══════════ */
 async function checkout(){
   if(!cart.size){toast('سلتك فارغة 🛒');return;}
   const name=$('cname').value.trim(), phone=$('cphone').value.trim(), addr=$('caddr').value.trim();
@@ -125,7 +130,6 @@ async function checkout(){
     lat=p.coords.latitude;lng=p.coords.longitude;}catch(e){}
   let total=0; const items=[...cart.values()].map(i=>{total+=i.qty*i.price;return{n:i.name,s:i.size,q:i.qty,p:i.price};});
   const id='B'+String(Date.now()).slice(-5);
-  /* ✅ تحديث 1: التتبع يظهر فوراً */
   const o={id,name,phone,addr,notes:$('cnotes').value.trim(),items,total,lat,lng};
   S.orders.set(id,{o,status:'pending',loc:null,ts:Date.now()});
   await send({t:'order',o});
@@ -136,21 +140,20 @@ function activeMy(){ const id=localStorage.getItem('rb_my'); if(!id)return null;
   const r=S.orders.get(id); return (r&&!['delivered','rejected'].includes(r.status))?id:null;}
 function openTrack(id){ trackId=id||activeMy()||localStorage.getItem('rb_my');
   if(!trackId){toast('لا يوجد طلب');return;}
-  $('trackOv').classList.add('show'); updateTrack(true);}
-/* ✅ تحديث 2: تنظيف الخريطة عند الإغلاق */
+  $('trackOv').classList.add('show'); updateTrack();}
 function closeTrack(){$('trackOv').classList.remove('show'); trackId=null;
   if(cmapObj){cmapObj.remove();cmapObj=null;cmapMk=null;} $('cmap').style.display='none';}
 const TLSTEPS=['pending','approved','preparing','ready','delivering','delivered'];
 const TLLBL={pending:'⏳ بانتظار الموافقة',approved:'✅ تم تأكيد الطلب',preparing:'👨‍ جاري التحضير',ready:'📦 جاهز للتوصيل',delivering:'🛵 في الطريق إليك',delivered:'🎉 تم التسليم'};
 let cmapObj=null,cmapMk=null;
-function updateTrack(force){ if(!$('trackOv').classList.contains('show'))return;
+function updateTrack(){ if(!$('trackOv').classList.contains('show'))return;
   const r=S.orders.get(trackId); if(!r)return;
   $('trTitle').textContent='طلب #'+r.o.id+' — '+r.o.total+' ريال';
   if(r.status==='rejected'){ $('tl').innerHTML=''; $('trReason').textContent='❌ نعتذر، تم رفض الطلب'+(r.reason?': '+r.reason:''); $('cmap').style.display='none'; return;}
   $('trReason').textContent='';
   const idx=TLSTEPS.indexOf(r.status);
   $('tl').innerHTML=TLSTEPS.map((s,i)=>`<div class="tli ${i<idx?'done':i===idx?'now':''}"><span class="dot">${i<=idx?'✓':'•'}</span>${TLLBL[s]}</div>`).join('');
-  if((r.status==='delivering')&&r.loc)showCMap(r); else if(r.status!=='delivering')$('cmap').style.display='none';
+  if(r.status==='delivering'&&r.loc)showCMap(r); else if(r.status!=='delivering')$('cmap').style.display='none';
   $('trWA').href='https://wa.me/'+WA+'?text='+encodeURIComponent(waMsg(r.o));}
 function showCMap(r){ $('cmap').style.display='block';
   if(!cmapObj){ const c=r.loc||(r.o.lat!=null?[r.o.lat,r.o.lng]:null)||[24.676,46.71];
@@ -159,14 +162,16 @@ function showCMap(r){ $('cmap').style.display='block';
     if(r.o.lat!=null)L.marker([r.o.lat,r.o.lng]).addTo(cmapObj).bindPopup('موقعك 🏠');}
   if(r.loc){ if(!cmapMk)cmapMk=L.marker(r.loc,{icon:L.divIcon({className:'drv',html:'🛵',iconSize:[30,30]})}).addTo(cmapObj);
     else cmapMk.setLatLng(r.loc); cmapObj.panTo(r.loc);}}
-function moveMarker(id,loc){ if($('trackOv').classList.contains('show')&&trackId===id){const r=S.orders.get(id); if(r)showCMap(r);} }
+function moveMarker(id){ if($('trackOv').classList.contains('show')&&trackId===id){const r=S.orders.get(id); if(r&&r.loc)showCMap(r);} }
 function waMsg(o){ let m=`السلام عليكم *ركن البشوات* 🌟\nطلب ${o.id}:\n`;
   o.items.forEach(i=>m+=`▪️ ${i.q}× ${i.n}${i.s?' ('+i.s+')':''} = ${i.q*i.p} ريال\n`);
   m+=`*الإجمالي: ${o.total} ريال*\n👤 ${o.name}\n📍 ${o.addr}`; if(o.phone)m+=`\n📞 ${o.phone}`; return m;}
 
-/* ============ 🖥️ المدير ============ */
-function adminLogin(){ if($('adminPass').value===ADMIN_PASS){ sessionStorage.setItem('rb_adm','1'); showAdmin(); } else toast('❌ كلمة سر خاطئة');}
+/* ═══════════ 🖥️ لوحة المدير ═══════════ */
+function adminLogin(){ if($('adminPass').value===ADMIN_PASS){ sessionStorage.setItem('rb_adm','1'); showAdmin(); toast('مرحباً بالمدير 👋'); } else toast('❌ كلمة سر خاطئة');}
 function showAdmin(){ $('adminGate').hidden=true; $('adminDash').hidden=false; renderAdmin(); }
+$('adminLogout').onclick=()=>{ sessionStorage.removeItem('rb_adm'); route(); };
+$('adminPass').addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin();});
 function renderAdmin(){
   const list=[...S.orders.values()].sort((a,b)=>(b.ts||0)-(a.ts||0));
   const cnt=s=>list.filter(r=>r.status===s).length;
@@ -182,7 +187,7 @@ function renderAdmin(){
     return `<div class="ocard"><div class="ohead">#${r.o.id} • ${r.o.total} ريال <span class="schip" style="background:${cl}">${lb}</span></div>
     <div class="obody">👤 ${r.o.name} ${r.o.phone?'📞 '+r.o.phone:''}<br>📍 ${r.o.addr||'—'}${r.o.notes?'<br>📝 '+r.o.notes:''}<br>🧾 ${r.o.items.map(x=>`${x.q}× ${x.n}`).join('، ')}</div>
     <div class="oacts">${acts}</div></div>`;}).join('')
-  :`<div class="empty">لا طلبات بعد..</div>`;}
+  :`<div class="empty">لا طلبات بعد..<br>أبقِ الصفحة مفتوحة 🔔</div>`;}
 $('adminList').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return;
   const id=b.dataset.id, a=b.dataset.a;
   if(a==='reject'){ const reason=prompt('سبب الرفض:','غير متوفر حالياً')||''; send({t:'status',id,s:'rejected',reason}); }
@@ -192,9 +197,11 @@ function beep(){ try{ const c=new (window.AudioContext||window.webkitAudioContex
   o.connect(g);g.connect(c.destination);o.frequency.value=880;g.gain.value=.25;o.start();
   setTimeout(()=>{o.stop();c.close();},350);}catch(e){} }
 
-/* ============ 🛵 السائق ============ */
-function driverLogin(){ if($('driverPass').value===DRIVER_PASS){ sessionStorage.setItem('rb_drv','1'); showDriver(); } else toast('❌ كود خاطئ');}
+/* ═══════════ 🛵 صفحة السائق ═══════════ */
+function driverLogin(){ if($('driverPass').value===DRIVER_PASS){ sessionStorage.setItem('rb_drv','1'); showDriver(); toast('انطلق يا بطل 🛵'); } else toast('❌ كود خاطئ');}
 function showDriver(){ $('driverGate').hidden=true; $('driverDash').hidden=false; renderDriver(); }
+$('driverLogout').onclick=()=>{ sessionStorage.removeItem('rb_drv'); route(); };
+$('driverPass').addEventListener('keydown',e=>{if(e.key==='Enter')driverLogin();});
 function renderDriver(){
   const list=[...S.orders.values()].sort((a,b)=>(a.ts||0)-(b.ts||0));
   const ready=list.filter(r=>r.status==='ready'), doing=list.filter(r=>r.status==='delivering');
@@ -218,7 +225,7 @@ function startWatch(id){ stopWatch();
   },()=>{},{enableHighAccuracy:true});}
 function stopWatch(){ if(watchId!=null){navigator.geolocation.clearWatch(watchId);watchId=null;} }
 
-/* ============ التوجيه بين الشاشات ============ */
+/* ═══════════ 🧭 التوجيه بين الشاشات ═══════════ */
 function route(){ const h=location.hash;
   view=h==='#admin'?'admin':h==='#driver'?'driver':'cust';
   $('custView').hidden=view!=='cust'; $('adminView').hidden=view!=='admin'; $('driverView').hidden=view!=='driver';
@@ -227,8 +234,9 @@ function route(){ const h=location.hash;
   if(view==='cust')$('fabTrack').hidden=!activeMy();}
 window.addEventListener('hashchange',route);
 
-/* ============ عام ============ */
-(function(){ if(!localStorage.getItem('rb_welcome_seen')){ setTimeout(()=>$('welcome').classList.add('show'),700); localStorage.setItem('rb_welcome_seen','1'); } })();
+/* ═══════════ عام ═══════════ */
+(function(){ if(view==='cust'&&!localStorage.getItem('rb_welcome_seen')){
+  setTimeout(()=>$('welcome').classList.add('show'),700); localStorage.setItem('rb_welcome_seen','1'); } })();
 function closeWelcome(){$('welcome').classList.remove('show');}
 $('welcome').addEventListener('click',e=>{if(e.target.id==='welcome')closeWelcome();});
 document.querySelectorAll('.wa-link').forEach(a=>a.href='https://wa.me/'+WA+'?text='+encodeURIComponent('السلام عليكم ركن البشوات 🌟 أبغى أطلب'));
