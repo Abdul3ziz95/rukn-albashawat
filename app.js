@@ -35,8 +35,10 @@ function handle(e){
   else if(e.t==='status'){ const r=S.orders.get(e.id); if(r){r.status=e.s;r.reason=e.reason||'';} }
   else if(e.t==='loc'){ const r=S.orders.get(e.id); if(r){r.loc=[e.lat,e.lng]; moveMarker(e.id,r.loc);} }
   dyn();}
+/* ✅ تحديث 3: زر 📍 يظهر تلقائياً عند وجود طلب نشط */
 let dT; function dyn(){ clearTimeout(dT); dT=setTimeout(()=>{
-  if(view==='admin')renderAdmin(); if(view==='driver')renderDriver(); if(view==='cust')updateTrack(); },150);}
+  if(view==='admin')renderAdmin(); if(view==='driver')renderDriver();
+  if(view==='cust'){updateTrack(); $('fabTrack').hidden=!activeMy();} },150);}
 function archive(){ const a={}; S.orders.forEach((r,id)=>a[id]={o:r.o,status:r.status,ts:r.ts});
   localStorage.setItem('rb_archive',JSON.stringify(a)); }
 setInterval(()=>{ if(view==='admin')archive(); },10000);
@@ -123,7 +125,10 @@ async function checkout(){
     lat=p.coords.latitude;lng=p.coords.longitude;}catch(e){}
   let total=0; const items=[...cart.values()].map(i=>{total+=i.qty*i.price;return{n:i.name,s:i.size,q:i.qty,p:i.price};});
   const id='B'+String(Date.now()).slice(-5);
-  await send({t:'order',o:{id,name,phone,addr,notes:$('cnotes').value.trim(),items,total,lat,lng}});
+  /* ✅ تحديث 1: التتبع يظهر فوراً */
+  const o={id,name,phone,addr,notes:$('cnotes').value.trim(),items,total,lat,lng};
+  S.orders.set(id,{o,status:'pending',loc:null,ts:Date.now()});
+  await send({t:'order',o});
   cart.clear(); updateCart(); closeCart();
   localStorage.setItem('rb_my',id); $('fabTrack').hidden=false;
   openTrack(id); toast('تم إرسال طلبك ✅');}
@@ -132,13 +137,15 @@ function activeMy(){ const id=localStorage.getItem('rb_my'); if(!id)return null;
 function openTrack(id){ trackId=id||activeMy()||localStorage.getItem('rb_my');
   if(!trackId){toast('لا يوجد طلب');return;}
   $('trackOv').classList.add('show'); updateTrack(true);}
-function closeTrack(){$('trackOv').classList.remove('show'); trackId=null; cmapObj=null;}
+/* ✅ تحديث 2: تنظيف الخريطة عند الإغلاق */
+function closeTrack(){$('trackOv').classList.remove('show'); trackId=null;
+  if(cmapObj){cmapObj.remove();cmapObj=null;cmapMk=null;} $('cmap').style.display='none';}
 const TLSTEPS=['pending','approved','preparing','ready','delivering','delivered'];
 const TLLBL={pending:'⏳ بانتظار الموافقة',approved:'✅ تم تأكيد الطلب',preparing:'👨‍ جاري التحضير',ready:'📦 جاهز للتوصيل',delivering:'🛵 في الطريق إليك',delivered:'🎉 تم التسليم'};
 let cmapObj=null,cmapMk=null;
 function updateTrack(force){ if(!$('trackOv').classList.contains('show'))return;
   const r=S.orders.get(trackId); if(!r)return;
-  $('trTitle').textContent='طلبك #'+r.o.id+' — '+r.o.total+' ريال';
+  $('trTitle').textContent='طلب #'+r.o.id+' — '+r.o.total+' ريال';
   if(r.status==='rejected'){ $('tl').innerHTML=''; $('trReason').textContent='❌ نعتذر، تم رفض الطلب'+(r.reason?': '+r.reason:''); $('cmap').style.display='none'; return;}
   $('trReason').textContent='';
   const idx=TLSTEPS.indexOf(r.status);
@@ -168,7 +175,7 @@ function renderAdmin(){
   $('adminList').innerHTML=list.length?list.map(r=>{
     const [lb,cl]=ST[r.status]; let acts='';
     if(r.status==='pending')acts=`<button class="act-ok" data-a="approved" data-id="${r.o.id}">✅ موافقة</button><button class="act-no" data-a="reject" data-id="${r.o.id}">❌ رفض</button>`;
-    else if(r.status==='approved')acts=`<button class="act-nx" data-a="preparing" data-id="${r.o.id}">👨‍🍳 بدء التحضير</button>`;
+    else if(r.status==='approved')acts=`<button class="act-nx" data-a="preparing" data-id="${r.o.id}">👨‍ بدء التحضير</button>`;
     else if(r.status==='preparing')acts=`<button class="act-nx" data-a="ready" data-id="${r.o.id}">📦 الطلب جاهز</button>`;
     else if(r.status==='ready')acts=`<span class="schip" style="background:#1565c0">⏳ بانتظار سائق</span>`;
     else if(r.status==='delivering')acts=`<button class="act-map" data-a="map" data-id="${r.o.id}">🗺️ تتبع السائق</button><button class="act-ok" data-a="delivered" data-id="${r.o.id}">🎉 تسليم</button>`;
