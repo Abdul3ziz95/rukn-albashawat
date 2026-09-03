@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#3a1710">
 <title>ركن البشوات | كشري - طواجن - حواوشي</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -10,68 +11,75 @@
 </head>
 <body>
 
-<!-- 💌 الرسالة الترحيبية -->
+<!-- ═══════════════ 1) الرسالة الترحيبية ═══════════════ -->
 <div id="welcome">
   <div class="w-card">
     <button class="w-close" onclick="closeWelcome()">✕</button>
     <img src="welcome.png" alt="مطاعم ركن البشوات">
     <h2>أهلاً وسهلاً بكم 🎩</h2>
-    <p>نرحّب بكم في <b>ركن البشوات</b> — أصل الأكل المصري الشعبي.<br>تصفّحوا أقسام المنيو، اختاروا أصنافكم المفضلة،<br>ويصلنا طلبكم مباشرة عبر واتساب. 🛵</p>
+    <p>نرحّب بكم في <b>ركن البشوات</b> — أصل الأكل المصري الشعبي.<br>
+    تصفّحوا أقسام المنيو، اختاروا أصنافكم المفضلة،<br>وتتبّعوا طلبكم لحظياً حتى باب البيت. 🛵</p>
     <button class="w-btn" onclick="closeWelcome()">🥙 تصفّح المنيو</button>
   </div>
 </div>
 
-<!-- ================= شاشة العميل (كما هي) ================= -->
+<!-- ═══════════════ 2) شاشة العميل ═══════════════ -->
 <div id="custView">
-<header class="topbar">
-  <div class="brand">
-    <img src="logo.png" alt="شعار ركن البشوات" class="logo">
-    <div><b>ركن البشوات</b><small>كشري • طواجن • حواوشي</small></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="logo.png" alt="شعار ركن البشوات" class="logo">
+      <div><b>ركن البشوات</b><small>كشري • طواجن • حواوشي</small></div>
+    </div>
+    <button class="cart-btn" onclick="openCart()">🛒 طلبك <span class="count">0</span></button>
+  </header>
+
+  <section class="hero">
+    <h1>ركن البشوات</h1>
+    <p>أصل الأكل المصري الشعبي — كشري • طواجن • حواوشي</p>
+    <div class="badges">
+      <span>🔥 السعرات الحرارية موضّحة</span>
+      <span>🛵 تتبع لحظي لطلبك</span>
+    </div>
+    <div class="hero-search"><input class="search" id="search" placeholder="🔍 ابحث عن صنف..."></div>
+  </section>
+
+  <nav class="cats" id="cats"></nav>
+  <main id="menu"></main>
+
+  <footer>
+    <h3>الفروع</h3>
+    <div class="branch"><b>الفرع ١:</b> أم الحمام الغربي — شارع الأمير نواف بن عبدالعزيز<br>📞 0552170714</div>
+    <div class="branch"><b>الفرع ٢:</b> حي المربع — شارع الفواتين، بجوار المتحف الوطني<br>📞 0550940258</div>
+    <div class="note">احتياج الفرد يومياً 2000 إلى 2500 سعرة حرارية وتختلف حسب الأشخاص • الأسعار شاملة الضريبة</div>
+  </footer>
+
+  <!-- سلة الطلبات -->
+  <div id="overlay" onclick="closeCart()"></div>
+  <aside id="drawer">
+    <div class="d-head">🛒 سلة الطلبات <button onclick="closeCart()">✕</button></div>
+    <div class="d-items" id="dItems"></div>
+    <div class="d-foot">
+      <input id="cname" placeholder="👤 اسمك الكريم">
+      <input id="cphone" placeholder="📞 رقم الجوال">
+      <input id="caddr" placeholder="📍 عنوان التوصيل">
+      <textarea id="cnotes" rows="2" placeholder="📝 ملاحظات..."></textarea>
+      <div class="total-row"><span>الإجمالي <small>(شامل الضريبة)</small></span><span id="dTotal">0 ريال</span></div>
+      <button class="checkout" onclick="checkout()">🚀 إرسال الطلب وتتبعه لحظياً</button>
+    </div>
+  </aside>
+
+  <!-- أزرار عائمة -->
+  <div class="fabs">
+    <button class="fab fab-cart" onclick="openCart()">🛒 <span class="count">0</span></button>
+    <button class="fab fab-track" id="fabTrack" hidden onclick="openTrack()">📍</button>
+    <a class="fab fab-wa wa-link" href="#" aria-label="واتساب">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    </a>
   </div>
-  <button class="cart-btn" onclick="openCart()">🛒 طلبك <span class="count">0</span></button>
-</header>
-
-<section class="hero">
-  <h1>ركن البشوات</h1>
-  <p>أصل الأكل المصري الشعبي — كشري • طواجن • حواوشي</p>
-  <div class="badges"><span>🔥 السعرات الحرارية موضّحة</span><span>🛵 طلبك يوصلنا واتساب</span></div>
-  <div class="hero-search"><input class="search" id="search" placeholder="🔍 ابحث عن صنف..."></div>
-</section>
-
-<nav class="cats" id="cats"></nav>
-<main id="menu"></main>
-
-<footer>
-  <h3>الفروع</h3>
-  <div class="branch"><b>الفرع ١:</b> أم الحمام الغربي — شارع الأمير نواف بن عبدالعزيز<br>📞 0552170714</div>
-  <div class="branch"><b>الفرع ٢:</b> حي المربع — شارع الفواتين، بجوار المتحف الوطني<br>📞 0550940258</div>
-  <div class="note">احتياج الفرد يومياً 2000 إلى 2500 سعرة حرارية وتختلف حسب الأشخاص • الأسعار شاملة الضريبة</div>
-</footer>
-
-<div id="overlay" onclick="closeCart()"></div>
-<aside id="drawer">
-  <div class="d-head">🛒 سلة الطلبات <button onclick="closeCart()">✕</button></div>
-  <div class="d-items" id="dItems"></div>
-  <div class="d-foot">
-    <input id="cname" placeholder="👤 اسمك الكريم">
-    <input id="cphone" placeholder="📞 رقم الجوال">
-    <input id="caddr" placeholder="📍 عنوان التوصيل">
-    <textarea id="cnotes" rows="2" placeholder="📝 ملاحظات..."></textarea>
-    <div class="total-row"><span>الإجمالي <small>(شامل الضريبة)</small></span><span id="dTotal">0 ريال</span></div>
-    <button class="checkout" onclick="checkout()">🚀 إرسال الطلب وتتبعه لحظياً</button>
-  </div>
-</aside>
-
-<div class="fabs">
-  <button class="fab fab-cart" onclick="openCart()">🛒 <span class="count">0</span></button>
-  <button class="fab fab-track" id="fabTrack" hidden onclick="openTrack()">📍</button>
-  <a class="fab fab-wa wa-link" href="#" aria-label="واتساب">
-    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-  </a>
 </div>
-</div><!-- /custView -->
 
-<!-- 📍 شاشة التتبع (عميل / مدير) -->
+<!-- ═══════════════ 3) شاشة التتبع الحي (عميل + مدير) ═══════════════ -->
 <div id="trackOv">
   <div class="w-card">
     <button class="w-close" onclick="closeTrack()">✕</button>
@@ -86,42 +94,64 @@
   </div>
 </div>
 
-<!-- ================= شاشة المدير ================= -->
+<!-- ═══════════════ 4) شاشة المدير 🖥️ ═══════════════ -->
 <div id="adminView" hidden>
+
+  <!-- بوابة الدخول -->
   <div class="gate" id="adminGate">
     <div class="w-card g-card">
+      <img src="logo.png" alt="" class="g-logo">
       <h2>🖥️ لوحة المدير</h2>
-      <input type="password" id="adminPass" placeholder="كلمة السر">
-      <button class="w-btn" onclick="adminLogin()">دخول</button>
+      <p class="g-sub">خاصة بإدارة ركن البشوات فقط</p>
+      <input type="password" id="adminPass" placeholder="كلمة السر" autocomplete="current-password">
+      <button class="w-btn" onclick="adminLogin()">🔓 دخول</button>
     </div>
   </div>
+
+  <!-- لوحة التحكم -->
   <div id="adminDash" hidden>
-    <header class="dash-head">🖥️ لوحة المدير — طلبات حية
-      <button class="w-btn small" onclick="location.hash=''">🥙 المنيو</button>
+    <header class="dash-head">
+      <div class="dh-title">🖥️ لوحة المدير <span class="conn" id="connA">🔴 اتصال…</span></div>
+      <div class="dh-btns">
+        <button class="w-btn small" onclick="location.hash=''">🥙 المنيو</button>
+        <button class="w-btn small danger" id="adminLogout">🚪 خروج</button>
+      </div>
     </header>
     <div id="adminStats"></div>
     <div id="adminList"></div>
   </div>
 </div>
 
-<!-- ================= شاشة السائق ================= -->
+<!-- ═══════════════ 5) شاشة السائق 🛵 ══════════════ -->
 <div id="driverView" hidden>
+
+  <!-- بوابة الدخول -->
   <div class="gate" id="driverGate">
     <div class="w-card g-card">
+      <img src="logo.png" alt="" class="g-logo">
       <h2>🛵 صفحة السائق</h2>
-      <input type="password" id="driverPass" placeholder="كود السائق">
-      <button class="w-btn" onclick="driverLogin()">دخول</button>
+      <p class="g-sub">خاصة بسائقي التوصيل فقط</p>
+      <input type="password" id="driverPass" placeholder="كود السائق" autocomplete="current-password">
+      <button class="w-btn" onclick="driverLogin()">🔓 دخول</button>
     </div>
   </div>
+
+  <!-- لوحة السائق -->
   <div id="driverDash" hidden>
-    <header class="dash-head">🛵 طلبات التوصيل
-      <button class="w-btn small" onclick="location.hash=''">🥙 المنيو</button>
+    <header class="dash-head drv-head">
+      <div class="dh-title">🛵 طلبات التوصيل <span class="conn" id="connD">🔴 اتصال…</span></div>
+      <div class="dh-btns">
+        <button class="w-btn small" onclick="location.hash=''">🥙 المنيو</button>
+        <button class="w-btn small danger" id="driverLogout">🚪 خروج</button>
+      </div>
     </header>
     <div id="driverList"></div>
   </div>
 </div>
 
+<!-- التنبيهات -->
 <div id="toast"><span id="toastMsg"></span></div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="app.js"></script>
 </body>
