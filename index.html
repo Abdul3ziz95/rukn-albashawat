@@ -5,165 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ركن البشوات | كشري - طواجن - حواوشي</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-:root{
-  --brown:#4d231b; --brown2:#6b3527; --dark:#3a1710;
-  --gold:#c9973b; --gold2:#e6c37c; --cream:#f7f1e6; --card:#fffdf8;
-  --ink:#2b1a15; --muted:#8a6f63; --line:#e8dcc9; --wa:#128c5e;
-}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth}
-body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--ink);
-  background-image:radial-gradient(#e9ddc8 1px,transparent 1px);background-size:22px 22px}
-/* ===== الشريط العلوي ===== */
-.topbar{position:sticky;top:0;z-index:50;background:rgba(58,23,16,.97);backdrop-filter:blur(8px);
-  display:flex;align-items:center;justify-content:space-between;padding:.6rem 1rem;gap:.8rem;box-shadow:0 4px 18px rgba(0,0,0,.25)}
-.brand{display:flex;align-items:center;gap:.7rem;color:#fff}
-.brand .logo{width:54px;height:54px;border-radius:50%;object-fit:cover;flex-shrink:0;
-  border:2px solid var(--gold);box-shadow:0 3px 10px rgba(0,0,0,.4);background:#d9a866}
-.brand b{font-size:1.1rem;font-weight:900}
-.brand small{display:block;color:var(--gold2);font-size:.68rem;font-weight:700}
-.cart-btn{position:relative;background:var(--gold);border:none;color:var(--dark);font-family:inherit;font-weight:800;
-  padding:.55rem 1.1rem;border-radius:50px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;gap:.4rem;transition:.2s}
-.cart-btn:hover{transform:translateY(-2px)}
-.count{background:var(--dark);color:#fff;border-radius:50px;min-width:22px;height:22px;display:grid;place-items:center;font-size:.72rem;padding:0 6px}
-/* ===== الهيرو ===== */
-.hero{background:linear-gradient(135deg,var(--dark),#5a241c 55%,#7a3a24);color:#fff;text-align:center;padding:3.2rem 1rem 3.4rem;position:relative;overflow:hidden}
-.hero::before{content:'🍚 🥙 🍲';position:absolute;inset:0;display:flex;justify-content:space-around;align-items:center;
-  font-size:5rem;opacity:.07;pointer-events:none}
-.hero h1{font-size:clamp(2rem,7vw,3.4rem);font-weight:900;color:var(--gold2);text-shadow:0 4px 20px rgba(0,0,0,.4)}
-.hero p{color:#f3e2c3;font-weight:700;margin:.4rem 0 1.4rem;font-size:1.05rem}
-.badges{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:.6rem}
-.badges span{background:#ffffff14;border:1px solid #ffffff2b;border-radius:50px;padding:.3rem .9rem;font-size:.75rem;font-weight:700;color:#f3e2c3}
-.hero-search{display:flex;justify-content:center;margin-top:1.3rem;position:relative}
-.search{background:#fff;border:2px solid var(--gold);border-radius:50px;padding:.75rem 1.4rem;font-family:inherit;
-  font-size:.95rem;font-weight:700;color:var(--ink);width:min(430px,92%);outline:none;text-align:center;
-  box-shadow:0 8px 24px rgba(0,0,0,.3);transition:.2s}
-.search:focus{border-color:var(--gold2);box-shadow:0 8px 24px rgba(0,0,0,.3),0 0 0 4px #c9973b33}
-.search::placeholder{color:var(--muted)}
-/* ===== التصنيفات ===== */
-.cats{position:sticky;top:66px;z-index:40;background:var(--cream);padding:.7rem 1rem;display:flex;gap:.5rem;
-  overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:none}
-.cats::-webkit-scrollbar{display:none}
-.chip{flex-shrink:0;background:#fff;border:1.5px solid var(--line);border-radius:50px;padding:.45rem 1.1rem;
-  font-family:inherit;font-weight:800;font-size:.85rem;color:var(--brown2);cursor:pointer;transition:.2s}
-.chip.active,.chip:hover{background:var(--brown);color:#fff;border-color:var(--brown)}
-/* ===== الأقسام ===== */
-main{max-width:1100px;margin:auto;padding:1.5rem 1rem 6rem}
-.section{margin-bottom:2.6rem;scroll-margin-top:160px}
-.ribbon{background:linear-gradient(180deg,var(--brown2),var(--brown));color:#fff;padding:.55rem 2.4rem;border-radius:.5rem;
-  position:relative;font-size:1.2rem;font-weight:900;display:inline-block;box-shadow:0 6px 16px rgba(61,21,15,.3);margin-bottom:1.2rem}
-.ribbon::before,.ribbon::after{content:"";position:absolute;top:9px;bottom:9px;width:24px;background:var(--dark);z-index:-1}
-.ribbon::before{left:-13px;clip-path:polygon(0 0,100% 0,100% 100%,0 100%,45% 50%)}
-.ribbon::after{right:-13px;clip-path:polygon(0 0,100% 0,55% 50%,100% 100%,0 100%)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.9rem}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:.9rem 1rem;display:flex;
-  flex-direction:column;gap:.7rem;transition:.25s;box-shadow:0 2px 8px rgba(77,35,27,.06)}
-.card:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(77,35,27,.14);border-color:var(--gold)}
-.c-top{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem}
-.c-top h4{font-size:.95rem;font-weight:800;line-height:1.5}
-.cal{flex-shrink:0;background:#fff6e6;border:1px solid #f0dcb8;color:#a06b1c;border-radius:50px;padding:.1rem .6rem;font-size:.68rem;font-weight:800}
-.size{font-family:inherit;font-size:.8rem;font-weight:700;color:var(--brown2);background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:.35rem .5rem;outline:none}
-.c-bot{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:auto}
-.price{background:linear-gradient(180deg,var(--gold2),var(--gold));color:var(--dark);border-radius:10px;padding:.25rem .8rem;font-weight:900;font-size:.85rem}
-/* ===== زرا الزيادة والإنقاص ===== */
-.step{display:flex;align-items:center;gap:.4rem;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:.28rem .4rem;transition:.2s}
-.step.on{border-color:var(--gold);box-shadow:0 0 0 3px #c9973b22}
-.step .st{width:30px;height:30px;border:none;border-radius:9px;font-size:1.1rem;font-weight:900;cursor:pointer;transition:.15s;font-family:inherit;line-height:1}
-.step .inc{background:var(--brown);color:#fff}
-.step .inc:hover{background:var(--gold);color:var(--dark)}
-.step .inc:active{transform:scale(.9)}
-.step .dec{background:#f3e7d7;color:var(--brown2)}
-.step .dec:hover{background:#e5d3ba}
-.step .dec:active{transform:scale(.9)}
-.step .qnum{min-width:22px;text-align:center;font-weight:900;color:var(--brown);font-size:.95rem}
-/* ===== أسهم التنقل ===== */
-.sec-nav{display:flex;gap:.8rem;margin-top:1.5rem}
-.nav-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:.6rem;background:#fff;border:1.5px solid var(--line);
-  border-radius:14px;padding:.6rem .8rem;cursor:pointer;transition:.2s;font-family:inherit}
-.nav-btn:hover{border-color:var(--brown);transform:translateY(-2px);box-shadow:0 6px 16px rgba(77,35,27,.14)}
-.nav-btn .arr{font-size:1.4rem;color:var(--gold);font-weight:900;line-height:1}
-.nav-btn .lbl{text-align:center}
-.nav-btn .lbl small{display:block;font-size:.65rem;color:var(--muted);font-weight:700}
-.nav-btn .lbl b{font-size:.88rem;color:var(--brown2);font-weight:900}
-.nav-btn:hover .lbl b{color:var(--brown)}
-/* ===== الرسالة الترحيبية ===== */
-#welcome{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:1rem;
-  background:rgba(26,10,6,.75);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:.4s}
-#welcome.show{opacity:1;pointer-events:auto}
-.w-card{background:var(--cream);border-radius:22px;max-width:440px;width:100%;padding:1.5rem 1.2rem 1.3rem;text-align:center;
-  position:relative;box-shadow:0 24px 70px rgba(0,0,0,.55);border:2px solid var(--gold);max-height:92vh;overflow-y:auto;
-  transform:translateY(26px) scale(.94);transition:.45s cubic-bezier(.2,.9,.3,1.15)}
-#welcome.show .w-card{transform:translateY(0) scale(1)}
-.w-card img{width:100%;border-radius:16px;border:1px solid var(--line);background:#fff}
-.w-card h2{color:var(--brown);font-weight:900;font-size:1.3rem;margin:.9rem 0 .3rem}
-.w-card p{color:var(--muted);font-weight:700;font-size:.88rem;line-height:1.9}
-.w-btn{margin-top:1.1rem;background:var(--brown);color:#fff;border:none;border-radius:50px;padding:.75rem 2.2rem;
-  font-family:inherit;font-weight:900;font-size:.95rem;cursor:pointer;transition:.2s}
-.w-btn:hover{background:var(--gold);color:var(--dark)}
-.w-close{position:absolute;top:.7rem;left:.7rem;width:34px;height:34px;border-radius:50%;border:none;
-  background:#00000012;color:var(--brown);font-weight:900;cursor:pointer;font-size:1rem;transition:.2s}
-.w-close:hover{background:#00000022;transform:rotate(90deg)}
-/* ===== سلة الطلبات ===== */
-#overlay{position:fixed;inset:0;background:rgba(30,12,8,.5);opacity:0;pointer-events:none;transition:.3s;z-index:60}
-#overlay.show{opacity:1;pointer-events:auto}
-#drawer{position:fixed;top:0;left:0;bottom:0;width:min(400px,92vw);background:var(--cream);z-index:70;display:flex;
-  flex-direction:column;transform:translateX(-105%);transition:.35s cubic-bezier(.2,.8,.2,1);box-shadow:8px 0 30px rgba(0,0,0,.25)}
-#drawer.show{transform:translateX(0)}
-.d-head{background:var(--brown);color:#fff;padding:1rem 1.2rem;display:flex;justify-content:space-between;align-items:center;font-weight:900}
-.d-head button{background:#ffffff22;border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:1rem;cursor:pointer}
-.d-items{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.7rem}
-.empty{text-align:center;color:var(--muted);font-weight:800;margin:auto;font-size:1rem}
-.ci{background:#fff;border:1px solid var(--line);border-radius:14px;padding:.7rem .9rem;display:flex;align-items:center;gap:.6rem;justify-content:space-between}
-.ci-info b{font-size:.85rem;font-weight:800;display:block}
-.ci-size{background:#fff6e6;border:1px solid #f0dcb8;color:#a06b1c;border-radius:50px;padding:0 .55rem;font-size:.65rem;font-weight:800;margin-inline-start:.3rem}
-.ci-price{color:var(--muted);font-size:.7rem;font-weight:700}
-.ci-ctrl{display:flex;align-items:center;gap:.55rem}
-.ci-ctrl .q{width:27px;height:27px;border-radius:8px;border:none;background:var(--brown);color:#fff;font-weight:900;cursor:pointer;font-size:.95rem}
-.ci-ctrl span{font-weight:900;min-width:18px;text-align:center}
-.ci-total{font-weight:900;color:var(--brown2);font-size:.82rem;min-width:52px;text-align:end}
-.d-foot{border-top:1px solid var(--line);padding:1rem;background:#fff;display:flex;flex-direction:column;gap:.6rem}
-.d-foot input,.d-foot textarea{font-family:inherit;border:1.5px solid var(--line);border-radius:10px;padding:.5rem .7rem;font-size:.82rem;outline:none;resize:none;background:var(--cream)}
-.d-foot input:focus,.d-foot textarea:focus{border-color:var(--gold)}
-.total-row{display:flex;justify-content:space-between;font-weight:900;font-size:1rem;color:var(--brown)}
-.total-row small{color:var(--muted);font-weight:700}
-.checkout{background:var(--wa);color:#fff;border:none;border-radius:12px;padding:.85rem;font-family:inherit;font-weight:900;font-size:1rem;cursor:pointer;display:flex;justify-content:center;align-items:center;gap:.5rem}
-.checkout:active{transform:scale(.98)}
-/* ===== أزرار عائمة ===== */
-.fabs{position:fixed;bottom:1rem;inset-inline:0;display:flex;justify-content:center;gap:.7rem;z-index:55}
-.fab{border:none;border-radius:50px;padding:.8rem 1.4rem;font-family:inherit;font-weight:900;font-size:.9rem;cursor:pointer;
-  display:flex;align-items:center;gap:.5rem;box-shadow:0 10px 26px rgba(0,0,0,.28);transition:.2s}
-.fab-cart{background:var(--brown);color:#fff}
-.fab-wa{background:var(--wa);color:#fff;padding:.8rem 1rem}
-.fab:hover{transform:translateY(-3px)}
-.fab svg{width:22px;height:22px;fill:#fff}
-/* ===== الفوتر ===== */
-footer{background:var(--dark);color:#e9d5b5;padding:2.2rem 1rem 5.5rem;text-align:center}
-footer h3{color:var(--gold2);font-weight:900;margin-bottom:1rem;font-size:1.2rem}
-.branch{background:#ffffff0d;border:1px solid #ffffff1f;border-radius:14px;max-width:520px;margin:.6rem auto;padding:.8rem 1rem;font-size:.85rem;font-weight:700}
-.branch b{color:var(--gold2)}
-footer .note{font-size:.72rem;color:#c9ae86;margin-top:1rem}
-#toast{position:fixed;bottom:5.5rem;inset-inline:0;display:flex;justify-content:center;z-index:80;pointer-events:none}
-#toast span{background:var(--dark);color:#fff;border-radius:50px;padding:.5rem 1.4rem;font-weight:800;font-size:.85rem;
-  opacity:0;transform:translateY(15px);transition:.3s;box-shadow:0 8px 20px rgba(0,0,0,.3)}
-#toast span.show{opacity:1;transform:translateY(0)}
-</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- 💌 الرسالة الترحيبية (تظهر مرة واحدة فقط) -->
+<!-- 💌 الرسالة الترحيبية -->
 <div id="welcome">
   <div class="w-card">
-    <button class="w-close" onclick="closeWelcome()" aria-label="إغلاق">✕</button>
-    <!-- 📁 ضع صورة الترحيب باسم welcome.png في نفس مجلد الملف -->
+    <button class="w-close" onclick="closeWelcome()">✕</button>
     <img src="welcome.png" alt="مطاعم ركن البشوات">
     <h2>أهلاً وسهلاً بكم 🎩</h2>
-    <p>نرحّب بكم في <b>ركن البشوات</b> — أصل الأكل المصري الشعبي.<br>
-    تصفّحوا أقسام المنيو، اختاروا أصنافكم المفضلة،<br>ويصلنا طلبكم مباشرة عبر واتساب. 🛵</p>
+    <p>نرحّب بكم في <b>ركن البشوات</b> — أصل الأكل المصري الشعبي.<br>تصفّحوا أقسام المنيو، اختاروا أصنافكم المفضلة،<br>ويصلنا طلبكم مباشرة عبر واتساب. 🛵</p>
     <button class="w-btn" onclick="closeWelcome()">🥙 تصفّح المنيو</button>
   </div>
 </div>
 
+<!-- ================= شاشة العميل (كما هي) ================= -->
+<div id="custView">
 <header class="topbar">
   <div class="brand">
     <img src="logo.png" alt="شعار ركن البشوات" class="logo">
@@ -175,16 +34,11 @@ footer .note{font-size:.72rem;color:#c9ae86;margin-top:1rem}
 <section class="hero">
   <h1>ركن البشوات</h1>
   <p>أصل الأكل المصري الشعبي — كشري • طواجن • حواوشي</p>
-  <div class="badges">
-    <span>🔥 السعرات الحرارية موضّحة</span><span>🛵 طلبك يوصلنا واتساب</span>
-  </div>
-  <div class="hero-search">
-    <input class="search" id="search" placeholder="🔍 ابحث عن صنف...">
-  </div>
+  <div class="badges"><span>🔥 السعرات الحرارية موضّحة</span><span>🛵 طلبك يوصلنا واتساب</span></div>
+  <div class="hero-search"><input class="search" id="search" placeholder="🔍 ابحث عن صنف..."></div>
 </section>
 
 <nav class="cats" id="cats"></nav>
-
 <main id="menu"></main>
 
 <footer>
@@ -200,224 +54,75 @@ footer .note{font-size:.72rem;color:#c9ae86;margin-top:1rem}
   <div class="d-items" id="dItems"></div>
   <div class="d-foot">
     <input id="cname" placeholder="👤 اسمك الكريم">
-    <textarea id="cnotes" rows="2" placeholder="📝 ملاحظات (عنوان، توصيل، تعديلات...)"></textarea>
+    <input id="cphone" placeholder="📞 رقم الجوال">
+    <input id="caddr" placeholder="📍 عنوان التوصيل">
+    <textarea id="cnotes" rows="2" placeholder="📝 ملاحظات..."></textarea>
     <div class="total-row"><span>الإجمالي <small>(شامل الضريبة)</small></span><span id="dTotal">0 ريال</span></div>
-    <button class="checkout" onclick="checkout()">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      إتمام الطلب عبر واتساب
-    </button>
+    <button class="checkout" onclick="checkout()">🚀 إرسال الطلب وتتبعه لحظياً</button>
   </div>
 </aside>
 
 <div class="fabs">
   <button class="fab fab-cart" onclick="openCart()">🛒 <span class="count">0</span></button>
+  <button class="fab fab-track" id="fabTrack" hidden onclick="openTrack()">📍</button>
   <a class="fab fab-wa wa-link" href="#" aria-label="واتساب">
     <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
   </a>
 </div>
+</div><!-- /custView -->
+
+<!-- 📍 شاشة التتبع (عميل / مدير) -->
+<div id="trackOv">
+  <div class="w-card">
+    <button class="w-close" onclick="closeTrack()">✕</button>
+    <h2 id="trTitle">حالة الطلب</h2>
+    <div id="tl"></div>
+    <div id="trReason"></div>
+    <div id="cmap"></div>
+    <div class="tr-btns">
+      <a id="trWA" class="w-btn wa2" target="_blank">📲 نسخة واتساب</a>
+      <button class="w-btn" onclick="closeTrack()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= شاشة المدير ================= -->
+<div id="adminView" hidden>
+  <div class="gate" id="adminGate">
+    <div class="w-card g-card">
+      <h2>🖥️ لوحة المدير</h2>
+      <input type="password" id="adminPass" placeholder="كلمة السر">
+      <button class="w-btn" onclick="adminLogin()">دخول</button>
+    </div>
+  </div>
+  <div id="adminDash" hidden>
+    <header class="dash-head">🖥️ لوحة المدير — طلبات حية
+      <button class="w-btn small" onclick="location.hash=''">🥙 المنيو</button>
+    </header>
+    <div id="adminStats"></div>
+    <div id="adminList"></div>
+  </div>
+</div>
+
+<!-- ================= شاشة السائق ================= -->
+<div id="driverView" hidden>
+  <div class="gate" id="driverGate">
+    <div class="w-card g-card">
+      <h2>🛵 صفحة السائق</h2>
+      <input type="password" id="driverPass" placeholder="كود السائق">
+      <button class="w-btn" onclick="driverLogin()">دخول</button>
+    </div>
+  </div>
+  <div id="driverDash" hidden>
+    <header class="dash-head">🛵 طلبات التوصيل
+      <button class="w-btn small" onclick="location.hash=''">🥙 المنيو</button>
+    </header>
+    <div id="driverList"></div>
+  </div>
+</div>
 
 <div id="toast"><span id="toastMsg"></span></div>
-
-<script>
-const WA = '966561365019';
-const SIZES = ['صغير','وسط','كبير'];
-
-/* ===== الرسالة الترحيبية — تظهر مرة واحدة فقط ===== */
-(function(){
-  /* 💡 لعرضها مرة كل جلسة بدلاً من مرة واحدة نهائياً: استبدل localStorage بـ sessionStorage */
-  if(!localStorage.getItem('rb_welcome_seen')){
-    setTimeout(()=> document.getElementById('welcome').classList.add('show'), 700);
-    localStorage.setItem('rb_welcome_seen','1');
-  }
-})();
-function closeWelcome(){ document.getElementById('welcome').classList.remove('show'); }
-/* الإغلاق بالضغط خارج البطاقة */
-document.getElementById('welcome').addEventListener('click', e=>{ if(e.target.id==='welcome') closeWelcome(); });
-
-const MENU = [
-{t:'الكشري',i:'🍚',items:[
- ['طبق كشري كبير',[12],260],['طبق كشري وسط',[10],210],['طبق كشري سوبر',[8],180],
- ['طبق كشري كمالة',[5],285],['طبق كشري عائلي وسط',[25],290],['طبق كشري عائلي كبير',[35],295],
- ['عيش توست',[2],150],['أرز بلبن',[6],160]]},
-{t:'طواجن وحواوشي',i:'🍲',items:[
- ['طاجن مكرونة لحم',[12],255],['طاجن مكرونة فراخ',[10],265],
- ['طاجن مكرونة بالدجاج والموزاريلا',[12],220],['طاجن مكرونة باللحمة والموزاريلا',[14],225],
- ['رغيف حواوشي سادة',[12],230],['رغيف حواوشي بالموزاريلا',[14],350]]},
-{t:'السندوتشات',i:'🥙',items:[
- ['فلافل مشكل',[3],138],['فلافل مشكل بالبيض',[4],178],['فلافل محشية سادة',[3],140],
- ['فول بالبيض',[4],140],['فول بالسلطة',[3],140],['مسقعة',[3],150],['بطاطس مهروسة',[3],158],
- ['بطاطس مهروسة بالبيض',[4],124],['عجة فرنساوي',[3],168],['بطاطس بانية',[3],158],
- ['جبنة قديمة (مش مصري)',[3],145],['جبنة فيتا بالخيار',[3],162],['زهرة - قرنبيط',[3],162],
- ['بطاطس محمرة بالكاتشب',[3],145],['بيض مسلوق بالخلطة',[3],140],['بطاطس شيبسي',[3],145],
- ['بطاطس شيبسي بالبيض',[4],150],['كبدة',[4],170],['فلافل جبنة كبير (صامولي)',[4],180],['شكشوكة (صامولي)',[2],170],
- ['بيض مقلي (صامولي)',[2],160],['بيض أومليت (صامولي)',[2],160],
- ['جبنة - مربى (صامولي)',[2],155],['فلافل برجر بالجبنة الشيدر (صامولي)',[4],175]]},
-{t:'الصحون',i:'🍽️',items:[
- ['بيض مسلوق 5 حبات بالطحينة',[8],210],['بطاطس أصابع محمرة بالكاتشب',[2,3,5],180],
- ['بطاطس شيبسي',[2,3,5],115],['كبدة اسكندراني',[5,8,12],120],
- ['فول بزيت الزيتون والطحينة',[7],140],['فول بالزيت الحار والطحينة',[7],75],
- ['بطاطس بانية',[2,3,5],150],['قرنبيط بانية',[2,3,5],255],['باذنجان مخلل',[2,3,5],320],
- ['مسقعة',[2,3,5],480],['باذنجان مقلي بالليمون',[2,3,5],514],['مقبلات مشكل محلي',[7],420],
- ['جبنة قديمة بالطحينة (مش مصري)',[3,5,7],178],['خبز مصري بلدي 3 حبات',[1],168],['بيض بالبسطرمة',[10],320],
- ['فول بالصلصة',[6],149],['فول بالسحق',[10],149],['مسقعة بالحمص',[7],149],
- ['سلطة بالمقبلات (فيتا - رومي - زيتون)',[10],210],['فلافل عادي 4 حبات',[1],155],
- ['فلافل محشية (الحبة بريال)',[1],150],['قرص فلافل بالجبنة الكبيرة',[2],180],['علبة عجينة فلافل كبيرة',[2,3,5],200]]},
-{t:'المقبلات',i:'🥗',items:[
- ['سلطة خضراء',[2,3,5],260],['جبنة قديمة',[3,5,7],210],['باذنجان دقة البشوات',[2,3,5],180],
- ['جبنة بالخيار',[3,5,7],285],['جبنة بالطماطم',[3,5,7],210],['بابا غنوج',[3,5,7],310],
- ['مشكل البشوات',[10,15,17],320],['باذنجان مقلي بالطحينة والدقة',[2,3,5],350]]},
-{t:'الاضافات',i:'➕',items:[['تقلية',[2],150],['عدس',[2],150],['صلصة',[2],150]]},
-{t:'مشروبات',i:'🥤',items:[['كينزا',[3],149],['حمضيات',[3],149],['ليمون صودا',[3],149],['ماء',[1],null]]},
-];
-
-const cats = document.getElementById('cats'), search = document.getElementById('search'), main = document.getElementById('menu');
-let currentSection = 0;
-
-MENU.forEach((sec,si)=>{
-  const chip = document.createElement('button');
-  chip.className='chip'; chip.textContent = sec.i+' '+sec.t;
-  chip.onclick = ()=> showSection(si, true);
-  cats.appendChild(chip);
-
-  const s = document.createElement('section');
-  s.className='section'; s.id='sec-'+si;
-  s.innerHTML = `<h3 class="ribbon">${sec.i} ${sec.t}</h3><div class="grid"></div>`;
-  const g = s.querySelector('.grid');
-  sec.items.forEach((it,ii)=>{
-    const [name,prices,cal] = it, multi = prices.length>1;
-    const card = document.createElement('div');
-    card.className='card'; card.dataset.name = name;
-    card.innerHTML = `
-      <div class="c-top"><h4>${name}</h4><span class="cal">${cal? '🔥 '+cal+' سعرة':'💧 صفر سعرات'}</span></div>
-      ${multi? `<select class="size">${prices.map((p,i)=>`<option value="${i}">${SIZES[i]} • ${p} ريال</option>`).join('')}</select>`:''}
-      <div class="c-bot">
-        <div class="price">${multi? 'من '+prices[0]+' ريال' : prices[0]+' ريال'}</div>
-        <div class="step" data-si="${si}" data-ii="${ii}">
-          <button class="st inc" aria-label="زيادة">+</button>
-          <span class="qnum">0</span>
-          <button class="st dec" aria-label="إنقاص">−</button>
-        </div>
-      </div>`;
-    g.appendChild(card);
-  });
-
-  const n = MENU.length;
-  const prev = (si-1+n)%n, next = (si+1)%n;
-  const nav = document.createElement('div');
-  nav.className='sec-nav';
-  nav.innerHTML = `
-    <button class="nav-btn" data-go="${prev}">
-      <span class="arr">→</span>
-      <span class="lbl"><small>القسم السابق</small><b>${MENU[prev].i} ${MENU[prev].t}</b></span>
-    </button>
-    <button class="nav-btn" data-go="${next}">
-      <span class="lbl"><small>القسم التالي</small><b>${MENU[next].i} ${MENU[next].t}</b></span>
-      <span class="arr">←</span>
-    </button>`;
-  s.appendChild(nav);
-  main.appendChild(s);
-});
-
-/* ===== زرا + و − ===== */
-document.addEventListener('click', e=>{
-  const b = e.target.closest('.st'); if(!b) return;
-  const step = b.closest('.step');
-  const it = MENU[+step.dataset.si].items[+step.dataset.ii];
-  let size='', price = it[1][0];
-  const sel = step.closest('.card').querySelector('select');
-  if(sel){ size = SIZES[+sel.value]; price = it[1][+sel.value]; }
-  const key = it[0]+'|'+size;
-  const cur = cart.get(key) || {name:it[0], size, price, qty:0};
-  b.classList.contains('inc') ? cur.qty++ : cur.qty--;
-  if(cur.qty<=0) cart.delete(key); else cart.set(key,cur);
-  updateCart();
-});
-document.addEventListener('change', e=>{ if(e.target.matches('.size')) refreshSteps(); });
-
-function refreshSteps(){
-  document.querySelectorAll('.step').forEach(st=>{
-    const it = MENU[+st.dataset.si].items[+st.dataset.ii];
-    let size=''; const sel = st.closest('.card').querySelector('select');
-    if(sel) size = SIZES[+sel.value];
-    const q = (cart.get(it[0]+'|'+size)||{}).qty || 0;
-    st.querySelector('.qnum').textContent = q;
-    st.classList.toggle('on', q>0);
-  });
-}
-
-main.addEventListener('click', e=>{
-  const b = e.target.closest('.nav-btn'); if(!b) return;
-  showSection(+b.dataset.go, true);
-});
-
-function showSection(si, scroll=false){
-  currentSection = si;
-  document.querySelectorAll('.section').forEach((s,i)=> s.style.display = (i===si)? '' : 'none');
-  document.querySelectorAll('.chip').forEach((c,i)=> c.classList.toggle('active', i===si));
-  if(scroll){
-    const target = document.getElementById('sec-'+si);
-    requestAnimationFrame(()=>{ target.scrollIntoView({behavior:'smooth', block:'start'}); });
-  }
-}
-showSection(0);
-
-search.addEventListener('input', e=>{
-  const q = e.target.value.trim();
-  if(!q){ showSection(currentSection); return; }
-  document.querySelectorAll('.section').forEach(s=>{
-    s.style.display='';
-    s.querySelectorAll('.card').forEach(c=> c.style.display = c.dataset.name.includes(q)? '' : 'none');
-    const any = [...s.querySelectorAll('.card')].some(c=>c.style.display!=='none');
-    s.style.display = any? '' : 'none';
-  });
-});
-
-/* ===== السلة ===== */
-const cart = new Map();
-document.getElementById('dItems').addEventListener('click', e=>{
-  const b = e.target.closest('.q'); if(!b) return;
-  const item = cart.get(b.dataset.k);
-  b.dataset.a==='inc' ? item.qty++ : item.qty--;
-  if(item.qty<=0) cart.delete(b.dataset.k);
-  updateCart();
-});
-function updateCart(){
-  let count=0, total=0;
-  cart.forEach(i=>{ count+=i.qty; total+=i.qty*i.price; });
-  document.querySelectorAll('.count').forEach(c=>c.textContent=count);
-  document.getElementById('dTotal').textContent = total+' ريال';
-  const box = document.getElementById('dItems');
-  box.innerHTML = cart.size ? [...cart.entries()].map(([k,i])=>`
-    <div class="ci">
-      <div class="ci-info"><b>${i.name}${i.size?`<span class="ci-size">${i.size}</span>`:''}</b><span class="ci-price">${i.price} ريال</span></div>
-      <div class="ci-ctrl"><button class="q" data-k="${k}" data-a="dec">−</button><span>${i.qty}</span><button class="q" data-k="${k}" data-a="inc">+</button></div>
-      <div class="ci-total">${i.qty*i.price} ريال</div>
-    </div>`).join('')
-  : `<div class="empty">🛒<br>سلتك فارغة..<br>أضف أصنافك المفضلة!</div>`;
-  refreshSteps();
-}
-function openCart(){ document.getElementById('drawer').classList.add('show'); document.getElementById('overlay').classList.add('show'); }
-function closeCart(){ document.getElementById('drawer').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
-
-function checkout(){
-  if(!cart.size){ toast('سلتك فارغة 🛒'); return; }
-  let total=0;
-  const lines = [...cart.values()].map(i=>{ total+=i.qty*i.price;
-    return `▪️ ${i.qty} × ${i.name}${i.size?` (${i.size})`:''} = ${i.qty*i.price} ريال`; });
-  const name = document.getElementById('cname').value.trim();
-  const notes = document.getElementById('cnotes').value.trim();
-  let msg = `السلام عليكم *ركن البشوات* 🌟\nطلب جديد:\n━━━━━━━━━━━━\n${lines.join('\n')}\n━━━━━━━━━━━━\n*الإجمالي: ${total} ريال* (شامل الضريبة)\n`;
-  if(name) msg += `👤 الاسم: ${name}\n`;
-  if(notes) msg += `📝 ملاحظات: ${notes}\n`;
-  window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(msg), '_blank');
-}
-
-document.querySelectorAll('.wa-link').forEach(a=>
-  a.href = 'https://wa.me/'+WA+'?text='+encodeURIComponent('السلام عليكم ركن البشوات 🌟 أبغى أطلب'));
-
-let tT; function toast(m){ const s=document.getElementById('toastMsg'); s.textContent=m; s.classList.add('show');
-  clearTimeout(tT); tT=setTimeout(()=>s.classList.remove('show'),1600); }
-updateCart();
-</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
