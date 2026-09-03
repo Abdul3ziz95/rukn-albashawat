@@ -51,40 +51,37 @@ header a{color:#e6c37c;font-size:.75rem;text-decoration:none}
 
 <div id="toast"><span id="toastMsg"></span></div>
 <script>
-const CH='bashawat-x9f3k7q2',CRYPT_PASS='bashawat-secure-2026',DRIVER_PASS='5678';
+const CH='bashawat-x9f3k7q2', DRIVER_PASS='5678';
 const $=s=>document.getElementById(s);
-let _k;async function key(){if(_k)return _k;const kb=await crypto.subtle.importKey('raw',new TextEncoder().encode(CRYPT_PASS),'PBKDF2',false,['deriveKey']);_k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:new TextEncoder().encode(CH),iterations:50000,hash:'SHA-256'},kb,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);return _k}
-async function enc(o){const k=await key(),iv=crypto.getRandomValues(new Uint8Array(12));const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},k,new TextEncoder().encode(JSON.stringify(o))));const b=new Uint8Array(12+ct.length);b.set(iv);b.set(ct,12);return btoa(String.fromCharCode(...b))}
-async function dec(s){try{const k=await key(),bin=Uint8Array.from(atob(s),c=>c.charCodeAt(0));return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:bin.slice(0,12)},k,bin.slice(12))))}catch(e){return null}}
-async function send(e){e.ts=Date.now();await fetch('https://ntfy.sh/'+CH,{method:'POST',body:await enc(e)})}
+async function send(e){ e.ts=Date.now(); await fetch('https://ntfy.sh/'+CH,{method:'POST',body:JSON.stringify(e)}); }
 const S=new Map();
-(function(){const es=new EventSource('https://ntfy.sh/'+CH+'/sse?since=12h');
+(function(){ const es=new EventSource('https://ntfy.sh/'+CH+'/sse?since=12h');
 es.onopen=()=>{const c=$('conn');c.textContent='🟢 متصل';c.classList.add('on')};
 es.onerror=()=>{const c=$('conn');c.textContent='🔴 اتصال…';c.classList.remove('on')};
-es.onmessage=async m=>{const e=await dec(m.data.message);if(!e)return;
-if(e.t==='order'&&!S.has(e.o.id))S.set(e.o.id,{o:e.o,status:'pending',loc:null,ts:e.ts});
-else if(e.t==='status'){const r=S.get(e.id);if(r){r.status=e.s;if(e.s==='ready'&&!$('dash').hidden){beep();toast('📦 طلب جاهز للاستلام #'+e.id)}}}
-render();}})();
-function render(){const l=[...S.values()].sort((a,b)=>(a.ts||0)-(b.ts||0));
-const ready=l.filter(r=>r.status==='ready'),doing=l.filter(r=>r.status==='delivering');
-$('list').innerHTML=[...ready.map(r=>card(r,'ready')),...doing.map(r=>card(r,'doing'))].join('')
-||`<div class="empty">لا طلبات جاهزة حالياً..<br>أبقِ الصفحة مفتوحة وسيصلك الجديد 🔔</div>`}
-function card(r,k){return `<div class="oc"><div class="oh">#${r.o.id} • ${r.o.total} ريال <span class="sc" style="background:${k==='ready'?'#1565c0':'#6a1b9a'}">${k==='ready'?'📦 جاهز':'🛵 توصيل'}</span></div>
+es.onmessage=m=>{ let e; try{e=JSON.parse(m.data.message)}catch(err){return}
+ if(e.t==='order'&&!S.has(e.o.id))S.set(e.o.id,{o:e.o,status:'pending',loc:null,ts:e.ts});
+ else if(e.t==='status'){ const r=S.get(e.id); if(r){ r.status=e.s; if(e.s==='ready'&&!$('dash').hidden){beep();toast('📦 طلب جاهز للاستلام #'+e.id);} } }
+ render(); }; })();
+function render(){ const l=[...S.values()].sort((a,b)=>(a.ts||0)-(b.ts||0));
+ const ready=l.filter(r=>r.status==='ready'), doing=l.filter(r=>r.status==='delivering');
+ $('list').innerHTML=[...ready.map(r=>card(r,'ready')),...doing.map(r=>card(r,'doing'))].join('')
+ ||`<div class="empty">لا طلبات جاهزة حالياً..<br>أبقِ الصفحة مفتوحة وسيصلك الجديد 🔔</div>`;}
+function card(r,k){ return `<div class="oc"><div class="oh">#${r.o.id} • ${r.o.total} ريال <span class="sc" style="background:${k==='ready'?'#1565c0':'#6a1b9a'}">${k==='ready'?'📦 جاهز':'🛵 توصيل'}</span></div>
 <div class="ob">📍 ${r.o.addr||'—'}<br>👤 ${r.o.name} ${r.o.phone?'📞 '+r.o.phone:''}</div>
 <div class="oa">${k==='ready'?`<button class="btn sm ok" data-a="accept" data-id="${r.o.id}">🛵 قبول واستلام</button>`
-:`${r.o.lat!=null?`<a class="btn sm map" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${r.o.lat},${r.o.lng}">🧭 خرائط جوجل</a>`:''}<button class="btn sm ok" data-a="delivered" data-id="${r.o.id}">✅ تم التسليم</button>`}</div></div>`}
-$('list').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const id=b.dataset.id;
-if(b.dataset.a==='accept'){send({t:'status',id,s:'delivering'});startWatch(id);toast('🛵 انطلق!')}
-else{stopWatch();send({t:'status',id,s:'delivered'});toast('🎉 أحسنت!')}});
+:`${r.o.lat!=null?`<a class="btn sm map" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${r.o.lat},${r.o.lng}">🧭 خرائط جوجل</a>`:''}<button class="btn sm ok" data-a="delivered" data-id="${r.o.id}">✅ تم التسليم</button>`}</div></div>`;}
+$('list').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; const id=b.dataset.id;
+ if(b.dataset.a==='accept'){ send({t:'status',id,s:'delivering'}); startWatch(id); toast('🛵 انطلق!'); }
+ else { stopWatch(); send({t:'status',id,s:'delivered'}); toast('🎉 أحسنت!'); } });
 let watchId=null,lastLoc=0;
-function startWatch(id){stopWatch();watchId=navigator.geolocation.watchPosition(p=>{const n=Date.now();if(n-lastLoc>4000){lastLoc=n;send({t:'loc',id,lat:p.coords.latitude,lng:p.coords.longitude})}},()=>{},{enableHighAccuracy:true})}
-function stopWatch(){if(watchId!=null){navigator.geolocation.clearWatch(watchId);watchId=null}}
-function beep(){try{const c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;g.gain.value=.25;o.start();setTimeout(()=>{o.stop();c.close()},350)}catch(e){}}
-let tT;function toast(m){const s=$('toastMsg');s.textContent=m;s.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>s.classList.remove('show'),1800)}
-function driverLogin(){if($('driverPass').value===DRIVER_PASS){sessionStorage.setItem('rb_drv','1');show()}else toast('❌ كود خاطئ')}
-function show(){$('gate').hidden=true;$('dash').hidden=false;render()}
-$('logout').onclick=()=>{sessionStorage.removeItem('rb_drv');location.reload()};
-$('driverPass').addEventListener('keydown',e=>{if(e.key==='Enter')driverLogin()});
+function startWatch(id){ stopWatch(); watchId=navigator.geolocation.watchPosition(p=>{ const n=Date.now(); if(n-lastLoc>4000){ lastLoc=n; send({t:'loc',id,lat:p.coords.latitude,lng:p.coords.longitude}); } },()=>{},{enableHighAccuracy:true}); }
+function stopWatch(){ if(watchId!=null){ navigator.geolocation.clearWatch(watchId); watchId=null; } }
+function beep(){ try{ const c=new (window.AudioContext||window.webkitAudioContext)(), o=c.createOscillator(), g=c.createGain(); o.connect(g); g.connect(c.destination); o.frequency.value=880; g.gain.value=.25; o.start(); setTimeout(()=>{o.stop();c.close()},350); }catch(e){} }
+let tT; function toast(m){ const s=$('toastMsg'); s.textContent=m; s.classList.add('show'); clearTimeout(tT); tT=setTimeout(()=>s.classList.remove('show'),2000); }
+function driverLogin(){ if($('driverPass').value===DRIVER_PASS){ sessionStorage.setItem('rb_drv','1'); show(); } else toast('❌ كود خاطئ'); }
+function show(){ $('gate').hidden=true; $('dash').hidden=false; render(); }
+$('logout').onclick=()=>{ sessionStorage.removeItem('rb_drv'); location.reload(); };
+$('driverPass').addEventListener('keydown',e=>{ if(e.key==='Enter')driverLogin(); });
 if(sessionStorage.getItem('rb_drv')==='1')show();
 </script>
 </body>
