@@ -1,37 +1,91 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#1c2e4a">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ركن البشوات — صفحة السائق</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif}
+[hidden]{display:none!important}
+body{background:#eef2f7;color:#1c2e4a}
+.gate{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#101d33,#1c2e4a)}
+.gc{background:#eef2f7;border:2px solid #c9973b;border-radius:22px;padding:1.5rem;width:min(340px,90%);text-align:center}
+.gc img{width:76px;height:76px;border-radius:50%;margin:0 auto 8px;border:3px solid #c9973b;object-fit:cover}
+.gc h2{color:#1c2e4a}.gc p{color:#6b7a94;font-size:.75rem;font-weight:700}
+.gc input{width:100%;margin:.9rem 0 .5rem;border:1.5px solid #d5dce8;border-radius:12px;padding:.7rem;text-align:center;font-weight:700;outline:none}
+.btn{background:#1c2e4a;color:#fff;border:none;border-radius:50px;padding:.65rem 1.6rem;font-weight:900;cursor:pointer}
+.btn.sm{padding:.45rem 1rem;font-size:.8rem;border-radius:10px}
+.btn.ok{background:#2e7d32}.btn.map{background:#c9973b;color:#1c2e4a;text-decoration:none;display:inline-block}
+header{position:sticky;top:0;background:#1c2e4a;color:#e6c37c;padding:.8rem 1rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;font-weight:900;z-index:40}
+header a{color:#e6c37c;font-size:.75rem;text-decoration:none}
+.conn{background:#ffffff22;border-radius:50px;padding:.1rem .7rem;font-size:.65rem;color:#ffcdd2}
+.conn.on{background:#2e7d3244;color:#a5d6a7}
+#list{max-width:700px;margin:auto;padding:1rem 1rem 4rem;display:flex;flex-direction:column;gap:.8rem}
+.oc{background:#fff;border:1.5px solid #d5dce8;border-radius:16px;padding:.9rem;display:flex;flex-direction:column;gap:.5rem}
+.oh{display:flex;justify-content:space-between;align-items:center;font-weight:900;color:#1c2e4a}
+.sc{border-radius:50px;padding:.12rem .7rem;font-size:.68rem;font-weight:900;color:#fff;flex-shrink:0}
+.ob{font-size:.82rem;font-weight:700;color:#6b7a94;line-height:1.9}
+.oa{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.empty{text-align:center;color:#6b7a94;font-weight:800;padding:2rem;line-height:2}
+#toast{position:fixed;bottom:2rem;inset-inline:0;display:flex;justify-content:center;z-index:120;pointer-events:none}
+#toast span{background:#1c2e4a;color:#fff;border-radius:50px;padding:.5rem 1.3rem;font-weight:800;font-size:.85rem;opacity:0;transition:.3s}
+#toast span.show{opacity:1}
+</style>
 </head>
-<body data-page="driver">
+<body>
 
-<div class="gate" id="driverGate">
-  <div class="w-card g-card">
-    <img src="logo.png" alt="" class="g-logo">
-    <h2>🛵 صفحة السائق</h2>
-    <p class="g-sub">خاصة بسائقي التوصيل فقط</p>
-    <input type="password" id="driverPass" placeholder="كود السائق">
-    <button class="w-btn" onclick="driverLogin()">🔓 دخول</button>
-  </div>
-</div>
+<div class="gate" id="gate"><div class="gc">
+<img src="logo.png" alt="">
+<h2>🛵 صفحة السائق</h2><p>خاصة بسائقي التوصيل فقط</p>
+<input type="password" id="driverPass" placeholder="كود السائق">
+<button class="btn" onclick="driverLogin()">🔓 دخول</button>
+</div></div>
 
-<div id="driverDash" hidden>
-  <header class="dash-head drv-head">
-    <div class="dh-title">🛵 طلبات التوصيل <span class="conn">🔴 اتصال…</span></div>
-    <div class="dh-btns">
-      <a class="w-btn small" href="index.html">🥙 المنيو</a>
-      <button class="w-btn small danger" id="driverLogout">🚪 خروج</button>
-    </div>
-  </header>
-  <div id="driverList"></div>
+<div id="dash" hidden>
+<header>
+<div>🛵 طلبات التوصيل <span class="conn" id="conn">🔴 اتصال…</span></div>
+<div><a href="index.html">🥙 المنيو</a> <button class="btn sm" style="background:#b71c1c" id="logout">🚪 خروج</button></div>
+</header>
+<div id="list"></div>
 </div>
 
 <div id="toast"><span id="toastMsg"></span></div>
-<script src="app.js"></script>
+<script>
+const CH='bashawat-x9f3k7q2',CRYPT_PASS='bashawat-secure-2026',DRIVER_PASS='5678';
+const $=s=>document.getElementById(s);
+let _k;async function key(){if(_k)return _k;const kb=await crypto.subtle.importKey('raw',new TextEncoder().encode(CRYPT_PASS),'PBKDF2',false,['deriveKey']);_k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:new TextEncoder().encode(CH),iterations:50000,hash:'SHA-256'},kb,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);return _k}
+async function enc(o){const k=await key(),iv=crypto.getRandomValues(new Uint8Array(12));const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},k,new TextEncoder().encode(JSON.stringify(o))));const b=new Uint8Array(12+ct.length);b.set(iv);b.set(ct,12);return btoa(String.fromCharCode(...b))}
+async function dec(s){try{const k=await key(),bin=Uint8Array.from(atob(s),c=>c.charCodeAt(0));return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:bin.slice(0,12)},k,bin.slice(12))))}catch(e){return null}}
+async function send(e){e.ts=Date.now();await fetch('https://ntfy.sh/'+CH,{method:'POST',body:await enc(e)})}
+const S=new Map();
+(function(){const es=new EventSource('https://ntfy.sh/'+CH+'/sse?since=12h');
+es.onopen=()=>{const c=$('conn');c.textContent='🟢 متصل';c.classList.add('on')};
+es.onerror=()=>{const c=$('conn');c.textContent='🔴 اتصال…';c.classList.remove('on')};
+es.onmessage=async m=>{const e=await dec(m.data.message);if(!e)return;
+if(e.t==='order'&&!S.has(e.o.id))S.set(e.o.id,{o:e.o,status:'pending',loc:null,ts:e.ts});
+else if(e.t==='status'){const r=S.get(e.id);if(r){r.status=e.s;if(e.s==='ready'&&!$('dash').hidden){beep();toast('📦 طلب جاهز للاستلام #'+e.id)}}}
+render();}})();
+function render(){const l=[...S.values()].sort((a,b)=>(a.ts||0)-(b.ts||0));
+const ready=l.filter(r=>r.status==='ready'),doing=l.filter(r=>r.status==='delivering');
+$('list').innerHTML=[...ready.map(r=>card(r,'ready')),...doing.map(r=>card(r,'doing'))].join('')
+||`<div class="empty">لا طلبات جاهزة حالياً..<br>أبقِ الصفحة مفتوحة وسيصلك الجديد 🔔</div>`}
+function card(r,k){return `<div class="oc"><div class="oh">#${r.o.id} • ${r.o.total} ريال <span class="sc" style="background:${k==='ready'?'#1565c0':'#6a1b9a'}">${k==='ready'?'📦 جاهز':'🛵 توصيل'}</span></div>
+<div class="ob">📍 ${r.o.addr||'—'}<br>👤 ${r.o.name} ${r.o.phone?'📞 '+r.o.phone:''}</div>
+<div class="oa">${k==='ready'?`<button class="btn sm ok" data-a="accept" data-id="${r.o.id}">🛵 قبول واستلام</button>`
+:`${r.o.lat!=null?`<a class="btn sm map" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${r.o.lat},${r.o.lng}">🧭 خرائط جوجل</a>`:''}<button class="btn sm ok" data-a="delivered" data-id="${r.o.id}">✅ تم التسليم</button>`}</div></div>`}
+$('list').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const id=b.dataset.id;
+if(b.dataset.a==='accept'){send({t:'status',id,s:'delivering'});startWatch(id);toast('🛵 انطلق!')}
+else{stopWatch();send({t:'status',id,s:'delivered'});toast('🎉 أحسنت!')}});
+let watchId=null,lastLoc=0;
+function startWatch(id){stopWatch();watchId=navigator.geolocation.watchPosition(p=>{const n=Date.now();if(n-lastLoc>4000){lastLoc=n;send({t:'loc',id,lat:p.coords.latitude,lng:p.coords.longitude})}},()=>{},{enableHighAccuracy:true})}
+function stopWatch(){if(watchId!=null){navigator.geolocation.clearWatch(watchId);watchId=null}}
+function beep(){try{const c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;g.gain.value=.25;o.start();setTimeout(()=>{o.stop();c.close()},350)}catch(e){}}
+let tT;function toast(m){const s=$('toastMsg');s.textContent=m;s.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>s.classList.remove('show'),1800)}
+function driverLogin(){if($('driverPass').value===DRIVER_PASS){sessionStorage.setItem('rb_drv','1');show()}else toast('❌ كود خاطئ')}
+function show(){$('gate').hidden=true;$('dash').hidden=false;render()}
+$('logout').onclick=()=>{sessionStorage.removeItem('rb_drv');location.reload()};
+$('driverPass').addEventListener('keydown',e=>{if(e.key==='Enter')driverLogin()});
+if(sessionStorage.getItem('rb_drv')==='1')show();
+</script>
 </body>
 </html>
