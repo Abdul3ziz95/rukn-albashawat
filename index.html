@@ -34,18 +34,7 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--ink);
 .hero p{color:#f3e2c3;font-weight:700;margin:.4rem 0 1.4rem;font-size:1.05rem}
 .badges{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:.6rem}
 .badges span{background:#ffffff14;border:1px solid #ffffff2b;border-radius:50px;padding:.3rem .9rem;font-size:.75rem;font-weight:700;color:#f3e2c3}
-/* ===== زر الأصناف المميزة ===== */
-.hero-featured{display:flex;justify-content:center;margin-top:1.3rem}
-.featured-btn{position:relative;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;color:var(--dark);
-  font-family:inherit;font-weight:900;font-size:1rem;padding:.75rem 2rem;border-radius:50px;cursor:pointer;
-  display:inline-flex;align-items:center;gap:.5rem;box-shadow:0 8px 24px rgba(0,0,0,.4);transition:.25s}
-.featured-btn:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 12px 30px rgba(0,0,0,.5)}
-.featured-btn:active{transform:scale(.97)}
-.trend-badge{position:absolute;top:-12px;left:-16px;background:linear-gradient(135deg,#e53e3e,#c53030);color:#fff;
-  font-size:.68rem;font-weight:900;padding:.25rem .7rem;border-radius:50px;box-shadow:0 4px 12px rgba(0,0,0,.4);
-  animation:trendPulse 1.6s ease-in-out infinite;border:1.5px solid #fff}
-@keyframes trendPulse{0%,100%{transform:scale(1) rotate(-4deg)}50%{transform:scale(1.15) rotate(3deg)}}
-.hero-search{display:flex;justify-content:center;margin-top:1.1rem;position:relative}
+.hero-search{display:flex;justify-content:center;margin-top:1.3rem;position:relative}
 .search{background:#fff;border:2px solid var(--gold);border-radius:50px;padding:.75rem 1.4rem;font-family:inherit;
   font-size:.95rem;font-weight:700;color:var(--ink);width:min(430px,92%);outline:none;text-align:center;
   box-shadow:0 8px 24px rgba(0,0,0,.3);transition:.2s}
@@ -56,6 +45,36 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--ink);
 .search-stats span{background:#ffffff22;padding:.25rem .8rem;border-radius:50px;border:1px solid #ffffff33}
 .search-stats .clear-btn{background:var(--gold);color:var(--dark);padding:.25rem .8rem;border-radius:50px;cursor:pointer;border:none;font-family:inherit;font-weight:900;font-size:.78rem;transition:.2s}
 .search-stats .clear-btn:hover{background:var(--gold2);transform:translateY(-1px)}
+/* ===== شاشة الترحيب + العداد الدائري ===== */
+#welcome{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:1rem;gap:0;background:rgba(26,10,6,.85);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:.45s;overflow-y:auto}
+#welcome.show{opacity:1;pointer-events:auto}
+.w-card{background:var(--cream);border-radius:22px;max-width:440px;width:100%;padding:1.5rem 1.2rem 1.3rem;text-align:center;
+  position:relative;box-shadow:0 24px 70px rgba(0,0,0,.55);border:2px solid var(--gold);
+  transform:translateY(26px) scale(.94);transition:.45s cubic-bezier(.2,.9,.3,1.15)}
+#welcome.show .w-card{transform:translateY(0) scale(1)}
+.w-card.hidden{display:none}
+.w-card img{width:100%;border-radius:16px;border:1px solid var(--line);background:#fff}
+.w-card h2{color:var(--brown);font-weight:900;font-size:1.3rem;margin:.9rem 0 .3rem}
+.w-card p{color:var(--muted);font-weight:700;font-size:.88rem;line-height:1.9}
+.w-close{position:absolute;top:.7rem;left:.7rem;width:34px;height:34px;border-radius:50%;border:none;
+  background:#00000012;color:var(--brown);font-weight:900;cursor:pointer;font-size:1rem;transition:.2s}
+.w-close:hover{background:#00000022;transform:rotate(90deg)}
+/* ===== العداد الدائري الحديث ===== */
+.loader-wrap{display:flex;flex-direction:column;align-items:center;gap:.8rem;margin-top:1.5rem;flex-shrink:0}
+.ring{position:relative;width:116px;height:116px;filter:drop-shadow(0 0 14px rgba(201,151,59,.35))}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:#ffffff22;stroke-width:8}
+.ring-fg{fill:none;stroke:url(#ringGrad);stroke-width:8;stroke-linecap:round;stroke-dasharray:326.7;stroke-dashoffset:326.7;
+  transition:stroke-dashoffset .35s ease;filter:drop-shadow(0 0 6px rgba(230,195,124,.7))}
+.ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:1.6rem}
+.ring-num small{font-size:.85rem;color:var(--gold2);font-weight:800;margin-inline-start:2px}
+.loader-txt{color:#f3e2c3;font-weight:800;font-size:.85rem;animation:blinkTxt 1.6s ease-in-out infinite}
+.loader-txt.done{animation:none;color:var(--gold2)}
+@keyframes blinkTxt{0%,100%{opacity:.55}50%{opacity:1}}
+.skip-link{background:none;border:none;color:#c9ae86;font-family:inherit;font-size:.75rem;font-weight:700;cursor:pointer;
+  text-decoration:underline;text-underline-offset:3px;transition:.2s;margin-top:.2rem}
+.skip-link:hover{color:var(--gold2)}
 /* ===== صفحة الأصناف المميزة (ستايل القرية النجدية) ===== */
 #featured{position:fixed;inset:0;z-index:95;background:var(--cream);
   background-image:radial-gradient(#e9ddc8 1px,transparent 1px);background-size:22px 22px;
@@ -88,12 +107,11 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--ink);
   box-shadow:0 8px 22px rgba(77,35,27,.25);margin-top:1.4rem;flex-shrink:0}
 .f-menu-btn:hover{background:var(--gold2);transform:translateY(-3px);box-shadow:0 12px 28px rgba(77,35,27,.35)}
 .f-menu-btn:active{transform:scale(.97)}
-/* حركات تبديل الصور */
 .anim-next{animation:featNext .5s ease}
 .anim-prev{animation:featPrev .5s ease}
 @keyframes featNext{from{opacity:0;transform:translateX(-35px) scale(.97)}to{opacity:1;transform:translateX(0) scale(1)}}
 @keyframes featPrev{from{opacity:0;transform:translateX(35px) scale(.97)}to{opacity:1;transform:translateX(0) scale(1)}}
-/* ===== التكبير (Lightbox) ===== */
+/* ===== التكبير ===== */
 #featLightbox{position:fixed;inset:0;z-index:99;background:rgba(20,8,4,.94);display:flex;align-items:center;justify-content:center;
   padding:1.2rem;opacity:0;pointer-events:none;transition:.3s;cursor:zoom-out}
 #featLightbox.show{opacity:1;pointer-events:auto}
@@ -157,23 +175,6 @@ main{max-width:1100px;margin:auto;padding:1.5rem 1rem 6rem}
 .nav-btn .lbl small{display:block;font-size:.65rem;color:var(--muted);font-weight:700}
 .nav-btn .lbl b{font-size:.88rem;color:var(--brown2);font-weight:900}
 .nav-btn:hover .lbl b{color:var(--brown)}
-/* ===== الرسالة الترحيبية ===== */
-#welcome{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:1rem;
-  background:rgba(26,10,6,.75);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:.4s}
-#welcome.show{opacity:1;pointer-events:auto}
-.w-card{background:var(--cream);border-radius:22px;max-width:440px;width:100%;padding:1.5rem 1.2rem 1.3rem;text-align:center;
-  position:relative;box-shadow:0 24px 70px rgba(0,0,0,.55);border:2px solid var(--gold);max-height:92vh;overflow-y:auto;
-  transform:translateY(26px) scale(.94);transition:.45s cubic-bezier(.2,.9,.3,1.15)}
-#welcome.show .w-card{transform:translateY(0) scale(1)}
-.w-card img{width:100%;border-radius:16px;border:1px solid var(--line);background:#fff}
-.w-card h2{color:var(--brown);font-weight:900;font-size:1.3rem;margin:.9rem 0 .3rem}
-.w-card p{color:var(--muted);font-weight:700;font-size:.88rem;line-height:1.9}
-.w-btn{margin-top:1.1rem;background:var(--brown);color:#fff;border:none;border-radius:50px;padding:.75rem 2.2rem;
-  font-family:inherit;font-weight:900;font-size:.95rem;cursor:pointer;transition:.2s}
-.w-btn:hover{background:var(--gold);color:var(--dark)}
-.w-close{position:absolute;top:.7rem;left:.7rem;width:34px;height:34px;border-radius:50%;border:none;
-  background:#00000012;color:var(--brown);font-weight:900;cursor:pointer;font-size:1rem;transition:.2s}
-.w-close:hover{background:#00000022;transform:rotate(90deg)}
 /* ===== سلة الطلبات ===== */
 #overlay{position:fixed;inset:0;background:rgba(30,12,8,.5);opacity:0;pointer-events:none;transition:.3s;z-index:60}
 #overlay.show{opacity:1;pointer-events:auto}
@@ -250,14 +251,31 @@ footer .credit a::after{content:"↗";font-size:.7rem;opacity:.7}
 </head>
 <body>
 
+<!-- ===== شاشة الترحيب + العداد الدائري ===== -->
 <div id="welcome">
-  <div class="w-card">
-    <button class="w-close" onclick="closeWelcome()" aria-label="إغلاق">✕</button>
+  <div class="w-card" id="wCard">
+    <button class="w-close" onclick="skipIntro()" aria-label="إغلاق">✕</button>
     <img src="welcome.png" alt="مطاعم ركن البشوات">
     <h2>أهلاً وسهلاً بكم 🎩</h2>
     <p>نرحّب بكم في <b>ركن البشوات</b> — أصل الأكل المصري الشعبي.<br>
     تصفّحوا أقسام المنيو، اختاروا أصنافكم المفضلة،<br>ويصلنا طلبكم مباشرة عبر واتساب. 🛵</p>
-    <button class="w-btn" onclick="closeWelcome()">🥙 تصفّح المنيو</button>
+  </div>
+  <div class="loader-wrap">
+    <div class="ring">
+      <svg viewBox="0 0 120 120">
+        <defs>
+          <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#e6c37c"/>
+            <stop offset="1" stop-color="#c9973b"/>
+          </linearGradient>
+        </defs>
+        <circle class="ring-bg" cx="60" cy="60" r="52"/>
+        <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="52"/>
+      </svg>
+      <div class="ring-num"><span id="loadPct">0</span><small>%</small></div>
+    </div>
+    <div class="loader-txt" id="loaderTxt">جارٍ تجهيز الأطباق... 🍽️</div>
+    <button class="skip-link" onclick="skipIntro()">تخطي والذهاب للمنيو ⏭</button>
   </div>
 </div>
 
@@ -274,12 +292,6 @@ footer .credit a::after{content:"↗";font-size:.7rem;opacity:.7}
   <p>أصل الأكل المصري الشعبي — كشري • طواجن • حواوشي</p>
   <div class="badges">
     <span>🔥 السعرات الحرارية موضّحة</span><span>🛵 طلبك يوصلنا واتساب</span>
-  </div>
-  <div class="hero-featured">
-    <button class="featured-btn" onclick="openFeatured()">
-      <span class="trend-badge">🔥 رائج</span>
-      ⭐ الأصناف المميزة
-    </button>
   </div>
   <div class="hero-search">
     <input class="search" id="search" placeholder="🔍 ابحث عن صنف...">
@@ -331,7 +343,7 @@ footer .credit a::after{content:"↗";font-size:.7rem;opacity:.7}
   </div>
 </footer>
 
-<!-- ===== صفحة الأصناف المميزة (ستايل القرية النجدية) ===== -->
+<!-- ===== صفحة الأصناف المميزة ===== -->
 <div id="featured">
   <button class="f-close" onclick="closeFeatured()" aria-label="إغلاق">✕</button>
   <div class="f-top">
@@ -383,16 +395,7 @@ footer .credit a::after{content:"↗";font-size:.7rem;opacity:.7}
 <script>
 const WA = '966561365019';
 const SIZES = ['صغير','وسط','كبير'];
-
-/* ===== الرسالة الترحيبية ===== */
-(function(){
-  if(!localStorage.getItem('rb_welcome_seen')){
-    setTimeout(()=> document.getElementById('welcome').classList.add('show'), 700);
-    localStorage.setItem('rb_welcome_seen','1');
-  }
-})();
-function closeWelcome(){ document.getElementById('welcome').classList.remove('show'); }
-document.getElementById('welcome').addEventListener('click', e=>{ if(e.target.id==='welcome') closeWelcome(); });
+const t0 = Date.now();
 
 /* ===== الأصناف المميزة ===== */
 /* 📁 ضع الصور داخل مجلد باسم img بجانب ملف الموقع بأسماء f1.png حتى f13.png */
@@ -411,18 +414,81 @@ const FEATURED = [
   {n:'مشكل البشوات', img:'img/f12.png'},
   {n:'أرز بلبن', img:'img/f13.png'}
 ];
+
+/* ===== شاشة الترحيب + العداد الدائري ===== */
+let introFinished = false, imgLoaded = 0, winLoaded = false;
+const ringFg = document.getElementById('ringFg');
+const loadPct = document.getElementById('loadPct');
+const loaderTxt = document.getElementById('loaderTxt');
+const CIRC = 326.7;
+
+/* الترحيب يظهر مرة واحدة فقط — العداد يظهر دائماً */
+const firstVisit = !localStorage.getItem('rb_welcome_seen');
+if(firstVisit) localStorage.setItem('rb_welcome_seen','1');
+else document.getElementById('wCard').classList.add('hidden');
+setTimeout(()=>{
+  document.getElementById('welcome').classList.add('show');
+  document.body.style.overflow='hidden';
+}, 250);
+
+/* قائمة كل الملفات والصور المطلوب تحميلها */
+const assets = ['logo.png','welcome.png', ...FEATURED.map(f=>f.img)];
+const totalAssets = assets.length;
+
+function setProgress(p){
+  loadPct.textContent = p;
+  ringFg.style.strokeDashoffset = CIRC * (1 - p/100);
+  if(p >= 100){
+    loaderTxt.textContent = 'اكتمل التحميل ✔';
+    loaderTxt.classList.add('done');
+  }
+}
+function tick(){
+  let pct = Math.round((imgLoaded/totalAssets) * 90);
+  if(winLoaded) pct = Math.max(pct, 90);
+  if(imgLoaded >= totalAssets && winLoaded) pct = 100;
+  setProgress(pct);
+  if(pct === 100) finishIntro();
+}
+window.addEventListener('load', ()=>{ winLoaded = true; tick(); });
+assets.forEach(src=>{
+  const im = new Image();
+  im.onload = im.onerror = ()=>{ imgLoaded++; tick(); };
+  im.src = src;
+});
+/* حد أمان: لو تعلّق أي ملف يُكمل بعد 15 ثانية */
+setTimeout(()=>{ imgLoaded = totalAssets; winLoaded = true; tick(); }, 15000);
+
+function finishIntro(){
+  if(introFinished) return;
+  introFinished = true;
+  const wait = Math.max(0, 1600 - (Date.now() - t0));
+  setTimeout(()=>{
+    document.getElementById('welcome').classList.remove('show');
+    document.body.style.overflow='';
+    setTimeout(openFeatured, 400);
+  }, wait);
+}
+/* تخطي التحميل والذهاب للمنيو مباشرة */
+function skipIntro(){
+  if(introFinished) return;
+  introFinished = true;
+  document.getElementById('welcome').classList.remove('show');
+  document.body.style.overflow='';
+}
+document.getElementById('welcome').addEventListener('click', e=>{ if(e.target.id==='welcome') skipIntro(); });
+
+/* ===== منطق الأصناف المميزة ===== */
 let featIndex = 0, featTimer = null, featAuto = true;
 const featImg = document.getElementById('featImg');
 const featAnim = document.getElementById('featAnim');
 
-/* بطاقة بديلة في حال عدم وجود الصورة */
 function featPlaceholder(name){
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="800" height="600" fill="#f7f1e6"/><circle cx="400" cy="250" r="120" fill="#e8dcc9"/><text x="400" y="295" font-size="110" text-anchor="middle">🍽️</text><text x="400" y="460" font-size="42" text-anchor="middle" fill="#4d231b" font-family="Cairo,sans-serif" font-weight="bold">${name}</text><text x="400" y="520" font-size="26" text-anchor="middle" fill="#8a6f63" font-family="Cairo,sans-serif">ركن البشوات ⭐</text></svg>`;
   return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
 featImg.addEventListener('error', ()=>{ featImg.src = featPlaceholder(FEATURED[featIndex].n); });
 
-/* بناء النقاط */
 const featDots = document.getElementById('featDots');
 FEATURED.forEach((_,i)=>{
   const d = document.createElement('button');
@@ -448,7 +514,6 @@ function startFeatAuto(){
 function stopFeatAuto(){
   if(featTimer){ clearInterval(featTimer); featTimer=null; }
 }
-/* تحكم يدوي: يوقف التنقل التلقائي نهائياً */
 function manualNav(d){
   featAuto = false;
   stopFeatAuto();
@@ -481,7 +546,6 @@ function closeFeatLightbox(){
   }
 }
 
-/* السحب باللمس (يدوي أيضاً) */
 let touchX = null;
 document.getElementById('featStage').addEventListener('touchstart', e=>{ touchX = e.touches[0].clientX; }, {passive:true});
 document.getElementById('featStage').addEventListener('touchend', e=>{
@@ -491,7 +555,6 @@ document.getElementById('featStage').addEventListener('touchend', e=>{
   touchX = null;
 }, {passive:true});
 
-/* الكيبورد */
 document.addEventListener('keydown', e=>{
   if(!document.getElementById('featured').classList.contains('show')) return;
   if(e.key==='Escape'){ document.getElementById('featLightbox').classList.contains('show') ? closeFeatLightbox() : closeFeatured(); }
