@@ -416,7 +416,7 @@ const FEATURED = [
 
 /* ===== شاشة الترحيب + العداد (الزيارة الأولى فقط) ===== */
 let introFinished = false;
-const MIN_INTRO_MS = 5000; /* ٥ ثواني حد أدنى لقراءة رسالة الترحيب */
+const MIN_INTRO_MS = 15000; /* ١٥ ثانية حد أدنى لقراءة رسالة الترحيب */
 
 const firstVisit = !localStorage.getItem('rb_welcome_seen');
 
@@ -454,8 +454,8 @@ if(firstVisit){
     im.onload = im.onerror = ()=>{ imgLoaded++; tick(); };
     im.src = src;
   });
-  /* حد أمان ١٥ ثانية */
-  setTimeout(()=>{ imgLoaded=totalAssets; winLoaded=true; tick(); }, 15000);
+  /* حد أمان ٢٥ ثانية في حال بطء الإنترنت الشديد */
+  setTimeout(()=>{ imgLoaded=totalAssets; winLoaded=true; tick(); }, 25000);
 } else {
   /* الزيارات التالية: بدون ترحيب وبدون عداد — تجهيز صامت للصور ثم فتح المميزة */
   let loaded = 0, opened = false;
@@ -468,7 +468,7 @@ if(firstVisit){
   setTimeout(open, 3000); /* حد أقصى ٣ ثواني */
 }
 
-/* إغلاق الترحيب وفتح المميزة — مع إتمام الـ ٥ ثواني */
+/* إغلاق الترحيب وفتح المميزة — مع إتمام الـ ١٥ ثانية */
 function finishIntro(){
   if(introFinished) return;
   introFinished = true;
