@@ -41,10 +41,17 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--ink);
   box-shadow:0 8px 24px rgba(0,0,0,.3);transition:.2s}
 .search:focus{border-color:var(--gold2);box-shadow:0 8px 24px rgba(0,0,0,.3),0 0 0 4px #c9973b33}
 .search::placeholder{color:var(--muted)}
+/* ===== عداد نتائج البحث ===== */
+.search-stats{display:none;justify-content:center;gap:.5rem;margin-top:.7rem;font-size:.82rem;font-weight:800;color:#f3e2c3}
+.search-stats.show{display:flex}
+.search-stats span{background:#ffffff22;padding:.25rem .8rem;border-radius:50px;border:1px solid #ffffff33}
+.search-stats .clear-btn{background:var(--gold);color:var(--dark);padding:.25rem .8rem;border-radius:50px;cursor:pointer;border:none;font-family:inherit;font-weight:900;font-size:.78rem;transition:.2s}
+.search-stats .clear-btn:hover{background:var(--gold2);transform:translateY(-1px)}
 /* ===== التصنيفات ===== */
 .cats{position:sticky;top:66px;z-index:40;background:var(--cream);padding:.7rem 1rem;display:flex;gap:.5rem;
-  overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:none}
+  overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:none;transition:.3s}
 .cats::-webkit-scrollbar{display:none}
+.cats.searching{opacity:.4;pointer-events:none}
 .chip{flex-shrink:0;background:#fff;border:1.5px solid var(--line);border-radius:50px;padding:.45rem 1.1rem;
   font-family:inherit;font-weight:800;font-size:.85rem;color:var(--brown2);cursor:pointer;transition:.2s}
 .chip.active,.chip:hover{background:var(--brown);color:#fff;border-color:var(--brown)}
@@ -60,6 +67,8 @@ main{max-width:1100px;margin:auto;padding:1.5rem 1rem 6rem}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:.9rem 1rem;display:flex;
   flex-direction:column;gap:.7rem;transition:.25s;box-shadow:0 2px 8px rgba(77,35,27,.06)}
 .card:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(77,35,27,.14);border-color:var(--gold)}
+.card.highlight{border-color:var(--gold);box-shadow:0 0 0 3px #c9973b33,0 10px 24px rgba(77,35,27,.14);animation:pulse .6s ease-out}
+@keyframes pulse{0%{transform:scale(.95)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
 .c-top{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem}
 .c-top h4{font-size:.95rem;font-weight:800;line-height:1.5}
 .cal{flex-shrink:0;background:#fff6e6;border:1px solid #f0dcb8;color:#a06b1c;border-radius:50px;padding:.1rem .6rem;font-size:.68rem;font-weight:800}
@@ -87,6 +96,11 @@ main{max-width:1100px;margin:auto;padding:1.5rem 1rem 6rem}
 .nav-btn .lbl small{display:block;font-size:.65rem;color:var(--muted);font-weight:700}
 .nav-btn .lbl b{font-size:.88rem;color:var(--brown2);font-weight:900}
 .nav-btn:hover .lbl b{color:var(--brown)}
+/* ===== رسالة لا توجد نتائج ===== */
+.no-results{display:none;text-align:center;padding:3rem 1rem;background:#fff;border:2px dashed var(--line);border-radius:16px;margin:2rem auto;max-width:400px}
+.no-results.show{display:block}
+.no-results h4{color:var(--brown);font-size:1.2rem;margin-bottom:.5rem}
+.no-results p{color:var(--muted);font-weight:700;font-size:.9rem}
 /* ===== الرسالة الترحيبية ===== */
 #welcome{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:1rem;
   background:rgba(26,10,6,.75);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:.4s}
@@ -143,6 +157,12 @@ footer h3{color:var(--gold2);font-weight:900;margin-bottom:1rem;font-size:1.2rem
 .branch{background:#ffffff0d;border:1px solid #ffffff1f;border-radius:14px;max-width:520px;margin:.6rem auto;padding:.8rem 1rem;font-size:.85rem;font-weight:700}
 .branch b{color:var(--gold2)}
 footer .note{font-size:.72rem;color:#c9ae86;margin-top:1rem}
+footer .credit{margin-top:1.4rem;padding-top:1.2rem;border-top:1px solid #ffffff1f;font-size:.85rem;font-weight:800;color:#a08565;display:flex;align-items:center;justify-content:center;gap:.4rem;flex-wrap:wrap}
+footer .credit .design-text{color:#c9ae86}
+footer .credit a{color:var(--gold2);text-decoration:none;font-weight:900;font-size:.95rem;border-bottom:1.5px dashed var(--gold);padding-bottom:1px;transition:.25s;display:inline-flex;align-items:center;gap:.3rem}
+footer .credit a:hover{color:var(--gold);border-bottom-style:solid;transform:translateY(-1px);text-shadow:0 0 10px rgba(230,195,124,.4)}
+footer .credit a::before{content:"✨";font-size:.85rem}
+footer .credit a::after{content:"↗";font-size:.7rem;opacity:.7}
 #toast{position:fixed;bottom:5.5rem;inset-inline:0;display:flex;justify-content:center;z-index:80;pointer-events:none}
 #toast span{background:var(--dark);color:#fff;border-radius:50px;padding:.5rem 1.4rem;font-weight:800;font-size:.85rem;
   opacity:0;transform:translateY(15px);transition:.3s;box-shadow:0 8px 20px rgba(0,0,0,.3)}
@@ -181,6 +201,10 @@ footer .note{font-size:.72rem;color:#c9ae86;margin-top:1rem}
   <div class="hero-search">
     <input class="search" id="search" placeholder="🔍 ابحث عن صنف...">
   </div>
+  <div class="search-stats" id="searchStats">
+    <span id="statsCount">0 نتيجة</span>
+    <button class="clear-btn" onclick="clearSearch()">✕ مسح البحث</button>
+  </div>
 </section>
 
 <nav class="cats" id="cats"></nav>
@@ -191,7 +215,11 @@ footer .note{font-size:.72rem;color:#c9ae86;margin-top:1rem}
   <h3>الفروع</h3>
   <div class="branch"><b>الفرع ١:</b> أم الحمام الغربي — شارع الأمير نواف بن عبدالعزيز<br>📞 0552170714</div>
   <div class="branch"><b>الفرع ٢:</b> حي المربع — شارع الفواتين، بجوار المتحف الوطني<br>📞 0550940258</div>
-  <div class="note">احتياج الفرد يومياً 2000 إلى 2500 سعرة حرارية وتختلف حسب الأشخاص • الأسعار شاملة الضريبة</div>
+  <div class="note">احتياج الفرد يومياً 2000 إلى 2500 سعرة حرارية وتختلف حسب الأشخاص</div>
+  <div class="credit">
+    <span class="design-text">تصميم</span>
+    <a href="https://abdul3ziz95.com/" target="_blank" rel="noopener noreferrer">Abdul3ziz95</a>
+  </div>
 </footer>
 
 <div id="overlay" onclick="closeCart()"></div>
@@ -224,14 +252,12 @@ const SIZES = ['صغير','وسط','كبير'];
 
 /* ===== الرسالة الترحيبية — تظهر مرة واحدة فقط ===== */
 (function(){
-  /* 💡 لعرضها مرة كل جلسة بدلاً من مرة واحدة نهائياً: استبدل localStorage بـ sessionStorage */
   if(!localStorage.getItem('rb_welcome_seen')){
     setTimeout(()=> document.getElementById('welcome').classList.add('show'), 700);
     localStorage.setItem('rb_welcome_seen','1');
   }
 })();
 function closeWelcome(){ document.getElementById('welcome').classList.remove('show'); }
-/* الإغلاق بالضغط خارج البطاقة */
 document.getElementById('welcome').addEventListener('click', e=>{ if(e.target.id==='welcome') closeWelcome(); });
 
 const MENU = [
@@ -271,12 +297,17 @@ const MENU = [
 ];
 
 const cats = document.getElementById('cats'), search = document.getElementById('search'), main = document.getElementById('menu');
+const searchStats = document.getElementById('searchStats'), statsCount = document.getElementById('statsCount');
 let currentSection = 0;
+let isSearching = false;
 
 MENU.forEach((sec,si)=>{
   const chip = document.createElement('button');
   chip.className='chip'; chip.textContent = sec.i+' '+sec.t;
-  chip.onclick = ()=> showSection(si, true);
+  chip.onclick = ()=> {
+    if(isSearching) clearSearch();
+    showSection(si, true);
+  };
   cats.appendChild(chip);
 
   const s = document.createElement('section');
@@ -361,16 +392,73 @@ function showSection(si, scroll=false){
 }
 showSection(0);
 
+/* ===== البحث المُحسّن ===== */
 search.addEventListener('input', e=>{
-  const q = e.target.value.trim();
-  if(!q){ showSection(currentSection); return; }
+  const q = e.target.value.trim().toLowerCase();
+  
+  // إزالة التأثير السابق
+  document.querySelectorAll('.card.highlight').forEach(c=>c.classList.remove('highlight'));
+  
+  if(!q){
+    clearSearch();
+    return;
+  }
+  
+  // تفعيل وضع البحث
+  isSearching = true;
+  cats.classList.add('searching');
+  searchStats.classList.add('show');
+  
+  let firstMatch = null;
+  let totalMatches = 0;
+  
   document.querySelectorAll('.section').forEach(s=>{
     s.style.display='';
-    s.querySelectorAll('.card').forEach(c=> c.style.display = c.dataset.name.includes(q)? '' : 'none');
-    const any = [...s.querySelectorAll('.card')].some(c=>c.style.display!=='none');
-    s.style.display = any? '' : 'none';
+    let sectionHasMatch = false;
+    
+    s.querySelectorAll('.card').forEach(c=>{
+      const match = c.dataset.name.toLowerCase().includes(q);
+      c.style.display = match ? '' : 'none';
+      if(match){
+        sectionHasMatch = true;
+        totalMatches++;
+        if(!firstMatch) firstMatch = c;
+      }
+    });
+    
+    s.style.display = sectionHasMatch ? '' : 'none';
   });
+  
+  // تحديث عداد النتائج
+  statsCount.textContent = totalMatches + ' نتيجة';
+  
+  if(firstMatch){
+    // التمرير تلقائياً لأول نتيجة
+    setTimeout(()=>{
+      firstMatch.scrollIntoView({behavior:'smooth', block:'center'});
+      firstMatch.classList.add('highlight');
+    }, 150);
+  } else {
+    toast('لا توجد نتائج 🔍');
+  }
 });
+
+function clearSearch(){
+  search.value = '';
+  isSearching = false;
+  cats.classList.remove('searching');
+  searchStats.classList.remove('show');
+  statsCount.textContent = '0 نتيجة';
+  
+  document.querySelectorAll('.card.highlight').forEach(c=>c.classList.remove('highlight'));
+  
+  document.querySelectorAll('.section').forEach(s=>{
+    s.style.display='';
+    s.querySelectorAll('.card').forEach(c=> c.style.display = '');
+  });
+  
+  showSection(currentSection);
+}
 
 /* ===== السلة ===== */
 const cart = new Map();
