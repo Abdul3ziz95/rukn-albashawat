@@ -28,17 +28,15 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--ink);
 .count{background:var(--dark);color:#fff;border-radius:50px;min-width:22px;height:22px;display:grid;place-items:center;font-size:.72rem;padding:0 6px}
 /* ===== الهيرو ===== */
 .hero{background:linear-gradient(135deg,var(--dark),#5a241c 55%,#7a3a24);color:#fff;text-align:center;padding:3.2rem 1rem 3.4rem;position:relative;overflow:hidden}
-.hero::before{content:'🍚 🥙 ';position:absolute;inset:0;display:flex;justify-content:space-around;align-items:center;
+.hero::before{content:'🍚 🥙 🍲';position:absolute;inset:0;display:flex;justify-content:space-around;align-items:center;
   font-size:5rem;opacity:.07;pointer-events:none}
 .hero h1{font-size:clamp(2rem,7vw,3.4rem);font-weight:900;color:var(--gold2);text-shadow:0 4px 20px rgba(0,0,0,.4)}
-.hero p{color:#f3e2c3;font-weight:700;margin:.4rem 0 1.4rem;font-size:1.05rem}
-.badges{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:.6rem}
-.badges span{background:#ffffff14;border:1px solid #ffffff2b;border-radius:50px;padding:.3rem .9rem;font-size:.75rem;font-weight:700;color:#f3e2c3}
-.hero-search{display:flex;justify-content:center;margin-top:1.3rem;position:relative}
-.search{background:#fff;border:2px solid var(--gold);border-radius:50px;padding:.75rem 1.4rem;font-family:inherit;
-  font-size:.95rem;font-weight:700;color:var(--ink);width:min(430px,92%);outline:none;text-align:center;
-  box-shadow:0 8px 24px rgba(0,0,0,.3);transition:.2s}
-.search:focus{border-color:var(--gold2);box-shadow:0 8px 24px rgba(0,0,0,.3),0 0 0 4px #c9973b33}
+.hero p{color:#f3e2c3;font-weight:700;margin:.4rem 0 0;font-size:1.05rem}
+.hero-search{display:flex;justify-content:center;margin-top:1.4rem;position:relative}
+.search{background:#fff;border:1.5px solid var(--gold);border-radius:50px;padding:.5rem 1.1rem;font-family:inherit;
+  font-size:.8rem;font-weight:700;color:var(--ink);width:min(300px,86%);outline:none;text-align:center;
+  box-shadow:0 6px 18px rgba(0,0,0,.28);transition:.2s}
+.search:focus{border-color:var(--gold2);box-shadow:0 6px 18px rgba(0,0,0,.28),0 0 0 3px #c9973b33}
 .search::placeholder{color:var(--muted)}
 .search-stats{display:none;justify-content:center;gap:.5rem;margin-top:.7rem;font-size:.82rem;font-weight:800;color:#f3e2c3}
 .search-stats.show{display:flex}
@@ -212,17 +210,23 @@ footer{background:var(--dark);color:#e9d5b5;padding:2.2rem 1rem 5.5rem;text-alig
 .branches-toggle.open .toggle-text{color:#fff}
 .branches-content{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.4,.0,.2,1), opacity .3s ease, margin-top .3s ease;opacity:0;margin-top:0}
 .branches-content.open{opacity:1;margin-top:.8rem}
-.branch{background:#ffffff0d;border:1px solid #ffffff1f;border-radius:14px;margin:.5rem 0;padding:.9rem 1rem;font-size:.85rem;font-weight:700;transition:.3s}
-.branch:hover{background:#ffffff14;border-color:var(--gold);transform:translateX(-3px)}
-.branch-info{display:flex;flex-direction:column;gap:.4rem}
-.branch-name{display:inline-flex;align-items:center;gap:.4rem;color:var(--gold2);font-weight:900;font-size:.95rem;
-  text-decoration:none;transition:.25s;padding:.15rem .3rem;border-radius:8px;align-self:flex-start}
-.branch-name:hover{color:var(--gold);background:#ffffff0a;transform:translateX(-4px)}
-.branch-name::before{content:"📍";font-size:.9rem}
-.branch-name::after{content:"↗";font-size:.7rem;opacity:.6;transition:.25s;margin-inline-start:.15rem}
-.branch-address{color:#e9d5b5;font-weight:700;font-size:.82rem;padding-inline-start:1.6rem}
-.branch-phone{color:#c9ae86;font-weight:700;font-size:.82rem;padding-inline-start:1.6rem}
-.branch-phone a{color:inherit;text-decoration:none}
+/* بطاقة الفرع الحديثة */
+.branch{background:#ffffff0d;border:1px solid #ffffff1f;border-radius:18px;margin:.6rem 0;padding:1rem 1rem .9rem;transition:.3s}
+.branch:hover{background:#ffffff12;border-color:var(--gold)}
+.branch-head{display:flex;align-items:center;gap:.7rem;margin-bottom:.85rem;text-align:start}
+.branch-num{width:40px;height:40px;flex-shrink:0;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--dark);
+  border-radius:12px;display:grid;place-items:center;font-weight:900;font-size:1.05rem;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+.branch-head b{color:var(--gold2);font-size:.95rem;display:block;font-weight:900}
+.branch-head small{color:#c9ae86;font-weight:700;font-size:.72rem;display:block;margin-top:.1rem}
+.branch-actions{display:flex;gap:.55rem}
+.b-act{flex:1;display:flex;align-items:center;justify-content:center;gap:.45rem;border:none;border-radius:12px;
+  padding:.7rem .5rem;font-family:inherit;font-weight:900;font-size:.8rem;cursor:pointer;text-decoration:none;transition:.25s}
+.b-act svg{width:17px;height:17px;fill:currentColor;flex-shrink:0}
+.b-act:active{transform:scale(.95)}
+.b-dir{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--dark);box-shadow:0 5px 14px rgba(201,151,59,.3)}
+.b-dir:hover{transform:translateY(-2px);box-shadow:0 9px 22px rgba(201,151,59,.45)}
+.b-call{background:linear-gradient(135deg,#128c5e,#1fad74);color:#fff;box-shadow:0 5px 14px rgba(18,140,94,.3)}
+.b-call:hover{transform:translateY(-2px);box-shadow:0 9px 22px rgba(18,140,94,.45)}
 footer .calorie-info{max-width:520px;margin:1.2rem auto 0;padding:.8rem 1.2rem;background:#ffffff08;border:1px dashed #ffffff22;
   border-radius:12px;font-size:.75rem;color:#c9ae86;display:flex;align-items:center;justify-content:center;gap:.5rem;font-weight:700;line-height:1.7}
 footer .calorie-info .info-icon{background:var(--gold);color:var(--dark);width:24px;height:24px;border-radius:50%;
@@ -280,9 +284,6 @@ footer .credit a::after{content:"↗";font-size:.7rem;opacity:.7}
 <section class="hero">
   <h1>ركن البشوات</h1>
   <p>أصل الأكل المصري الشعبي — كشري • طواجن • حواوشي</p>
-  <div class="badges">
-    <span>🔥 السعرات الحرارية موضّحة</span><span>🛵 طلبك يوصلنا واتساب</span>
-  </div>
   <div class="hero-search">
     <input class="search" id="search" placeholder="🔍 ابحث عن صنف...">
   </div>
@@ -304,21 +305,41 @@ footer .credit a::after{content:"↗";font-size:.7rem;opacity:.7}
     </button>
     <div class="branches-content" id="branchesContent">
       <div class="branch">
-        <div class="branch-info">
-          <a href="https://maps.app.goo.gl/cs2gEscGLESkvoz77?g_st=ac" target="_blank" rel="noopener noreferrer" class="branch-name">
-            <b>الفرع ١:</b> أم الحمام الغربي
+        <div class="branch-head">
+          <span class="branch-num">١</span>
+          <div>
+            <b>الفرع ١ — أم الحمام الغربي</b>
+            <small>شارع الأمير نواف بن عبدالعزيز</small>
+          </div>
+        </div>
+        <div class="branch-actions">
+          <a class="b-act b-dir" href="https://maps.app.goo.gl/cs2gEscGLESkvoz77?g_st=ac" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
+            التوجه للمطعم
           </a>
-          <div class="branch-address">شارع الأمير نواف بن عبدالعزيز</div>
-          <div class="branch-phone">📞 <a href="tel:0552170714">0552170714</a></div>
+          <a class="b-act b-call" href="tel:0552170714">
+            <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            الاتصال مباشر
+          </a>
         </div>
       </div>
       <div class="branch">
-        <div class="branch-info">
-          <a href="https://maps.app.goo.gl/2geMfVpZWQDYkZYRA" target="_blank" rel="noopener noreferrer" class="branch-name">
-            <b>الفرع ٢:</b> حي المربع
+        <div class="branch-head">
+          <span class="branch-num">٢</span>
+          <div>
+            <b>الفرع ٢ — حي المربع</b>
+            <small>شارع الفواتين، بجوار المتحف الوطني</small>
+          </div>
+        </div>
+        <div class="branch-actions">
+          <a class="b-act b-dir" href="https://maps.app.goo.gl/2geMfVpZWQDYkZYRA" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
+            التوجه للمطعم
           </a>
-          <div class="branch-address">شارع الفواتين، بجوار المتحف الوطني</div>
-          <div class="branch-phone">📞 <a href="tel:0550940258">0550940258</a></div>
+          <a class="b-act b-call" href="tel:0550940258">
+            <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            الاتصال مباشر
+          </a>
         </div>
       </div>
     </div>
@@ -506,7 +527,6 @@ function showFeat(i, dir){
   featIndex = (i + FEATURED.length) % FEATURED.length;
   const item = FEATURED[featIndex];
   document.querySelectorAll('.f-dot').forEach((d,di)=> d.classList.toggle('active', di===featIndex));
-  /* لا يتم التبديل إلا بعد جهوزية الصورة التالية تماماً */
   withFeatSrc(item, src=>{
     featImg.src = src;
     featImg.alt = item.n;
@@ -540,7 +560,6 @@ function closeFeatured(){
   stopFeatAuto();
 }
 
-/* السحب باللمس (يدوي أيضاً) */
 let touchX = null;
 document.getElementById('featStage').addEventListener('touchstart', e=>{ touchX = e.touches[0].clientX; }, {passive:true});
 document.getElementById('featStage').addEventListener('touchend', e=>{
@@ -550,7 +569,6 @@ document.getElementById('featStage').addEventListener('touchend', e=>{
   touchX = null;
 }, {passive:true});
 
-/* الكيبورد */
 document.addEventListener('keydown', e=>{
   if(!document.getElementById('featured').classList.contains('show')) return;
   if(e.key==='Escape') closeFeatured();
