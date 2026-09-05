@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#3a1710">
 <title>ركن البشوات | كشري - طواجن - حواوشي</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800;900&family=Aref+Ruqaa:wght@700&display=swap" rel="stylesheet">
 <style>
 :root{
   --brown:#4d231b; --brown2:#6b3527; --dark:#3a1710;
@@ -248,7 +251,7 @@ footer .credit a::after{content:"↗";font-size:.7rem;opacity:.7}
 <div id="welcome">
   <div class="w-card" id="wCard">
     <button class="w-close" onclick="skipIntro()" aria-label="إغلاق">✕</button>
-    <img src="welcome.png" alt="مطاعم ركن البشوات">
+    <img src="welcome.png" alt="مطاعم ركن البشوات" decoding="async">
     <h2>أهلاً وسهلاً بكم 🎩</h2>
     <p>نرحّب بكم في <b>ركن البشوات</b> — أصل الأكل المصري الشعبي.<br>
     تصفّحوا أقسام المنيو، اختاروا أصنافكم المفضلة،<br>ويصلنا طلبكم مباشرة عبر واتساب. 🛵</p>
@@ -274,7 +277,7 @@ footer .credit a::after{content:"↗";font-size:.7rem;opacity:.7}
 
 <header class="topbar">
   <div class="brand">
-    <img src="logo.png" alt="شعار ركن البشوات" class="logo">
+    <img src="logo.png" alt="شعار ركن البشوات" class="logo" decoding="async">
     <div><b>ركن البشوات</b><small>كشري • طواجن • حواوشي</small></div>
   </div>
   <button class="cart-btn" onclick="openCart()">🛒 طلبك <span class="count">0</span></button>
@@ -357,13 +360,13 @@ footer .credit a::after{content:"↗";font-size:.7rem;opacity:.7}
 <div id="featured">
   <button class="f-close" onclick="closeFeatured()" aria-label="إغلاق">✕</button>
   <div class="f-top">
-    <img src="logo.png" alt="ركن البشوات" class="f-logo">
+    <img src="logo.png" alt="ركن البشوات" class="f-logo" decoding="async">
     <h2 class="f-title">من اكلات البشوات</h2>
   </div>
   <div class="f-stage" id="featStage">
     <button class="f-arrow f-right" onclick="manualNav(-1)" aria-label="السابق">❯</button>
     <div class="f-img-box" id="featAnim">
-      <img id="featImg" src="" alt="">
+      <img id="featImg" src="" alt="" decoding="async">
     </div>
     <button class="f-arrow f-left" onclick="manualNav(1)" aria-label="التالي">❮</button>
   </div>
@@ -399,6 +402,13 @@ footer .credit a::after{content:"↗";font-size:.7rem;opacity:.7}
 const WA = '966561365019';
 const SIZES = ['صغير','وسط','كبير'];
 const t0 = Date.now();
+
+/* ===== التخزين السريع في الهاتف (Service Worker) ===== */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
 
 /* ===== الأصناف المميزة ===== */
 /* 📁 ضع الصور داخل مجلد باسم img بجانب ملف الموقع بأسماء f1.png حتى f13.png */
@@ -493,12 +503,11 @@ function skipIntro(){
 }
 document.getElementById('welcome').addEventListener('click', e=>{ if(e.target.id==='welcome') skipIntro(); });
 
-/* ===== منطق الأصناف المميزة (نظام تسلسلي صارم يمنع التكرار وخلل الترتيب) ===== */
+/* ===== منطق الأصناف المميزة (تسلسلي صارم) ===== */
 let featIndex = 0, featAuto = true, featToken = 0, autoTimeout = null;
 const featImg = document.getElementById('featImg');
 const featAnim = document.getElementById('featAnim');
 
-/* تجهيز مسبق لجميع الصور */
 const featReady = {};
 FEATURED.forEach(f=>{
   const im = new Image();
@@ -522,20 +531,18 @@ FEATURED.forEach((_,i)=>{
   featDots.appendChild(d);
 });
 
-/* العرض التسلسلي: لا يُعرض صنف إلا بعد جهوزيته، وأي طلب قديم يُلغى تلقائياً */
 function showFeat(i, dir, fromAuto){
   featIndex = (i + FEATURED.length) % FEATURED.length;
   const item = FEATURED[featIndex];
   const myToken = ++featToken;
   withFeatSrc(item, src=>{
-    if(myToken !== featToken) return; /* طلب قديم — تجاهله لمنع خلل الترتيب */
+    if(myToken !== featToken) return;
     featImg.src = src;
     featImg.alt = item.n;
     document.querySelectorAll('.f-dot').forEach((d,di)=> d.classList.toggle('active', di===featIndex));
     featAnim.classList.remove('anim-next','anim-prev');
     void featAnim.offsetWidth;
     featAnim.classList.add(dir==='prev' ? 'anim-prev' : 'anim-next');
-    /* التالي يُجدول فقط بعد ظهور الحالي فعلياً */
     if(fromAuto && featAuto) scheduleAuto();
   });
 }
