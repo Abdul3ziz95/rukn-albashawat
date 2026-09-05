@@ -28,7 +28,7 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--ink);
 .count{background:var(--dark);color:#fff;border-radius:50px;min-width:22px;height:22px;display:grid;place-items:center;font-size:.72rem;padding:0 6px}
 /* ===== الهيرو ===== */
 .hero{background:linear-gradient(135deg,var(--dark),#5a241c 55%,#7a3a24);color:#fff;text-align:center;padding:3.2rem 1rem 3.4rem;position:relative;overflow:hidden}
-.hero::before{content:'🍚 🥙 🍲';position:absolute;inset:0;display:flex;justify-content:space-around;align-items:center;
+.hero::before{content:'🍚 🥙 ';position:absolute;inset:0;display:flex;justify-content:space-around;align-items:center;
   font-size:5rem;opacity:.07;pointer-events:none}
 .hero h1{font-size:clamp(2rem,7vw,3.4rem);font-weight:900;color:var(--gold2);text-shadow:0 4px 20px rgba(0,0,0,.4)}
 .hero p{color:#f3e2c3;font-weight:700;margin:.4rem 0 1.4rem;font-size:1.05rem}
@@ -88,8 +88,8 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--ink);
 .f-title{font-family:'Aref Ruqaa',serif;color:var(--brown);font-size:clamp(1.5rem,6vw,2.2rem);font-weight:700;margin-top:.7rem;line-height:1.6}
 .f-stage{position:relative;width:100%;max-width:600px;flex:1;min-height:300px;display:flex;align-items:center;justify-content:center;padding:1rem 0}
 .f-img-box{width:88%;display:flex;align-items:center;justify-content:center}
-.f-img-box img{max-width:100%;max-height:52vh;object-fit:contain;cursor:zoom-in;
-  filter:drop-shadow(0 20px 35px rgba(77,35,27,.28));transition:.3s;border-radius:8px}
+.f-img-box img{max-width:100%;max-height:52vh;object-fit:contain;user-select:none;-webkit-user-drag:none;
+  filter:drop-shadow(0 20px 35px rgba(77,35,27,.28));border-radius:8px}
 .f-arrow{position:absolute;top:50%;transform:translateY(-50%);width:56px;height:56px;border-radius:50%;
   border:1.5px solid #b98d5f66;background:#fffdf866;color:#8a6f63;font-size:1.15rem;cursor:pointer;transition:.25s;
   display:grid;place-items:center;backdrop-filter:blur(2px);z-index:3;line-height:1}
@@ -110,15 +110,6 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--ink);
 .anim-prev{animation:featPrev .5s ease}
 @keyframes featNext{from{opacity:0;transform:translateX(-35px) scale(.97)}to{opacity:1;transform:translateX(0) scale(1)}}
 @keyframes featPrev{from{opacity:0;transform:translateX(35px) scale(.97)}to{opacity:1;transform:translateX(0) scale(1)}}
-/* ===== التكبير ===== */
-#featLightbox{position:fixed;inset:0;z-index:99;background:rgba(20,8,4,.94);display:flex;align-items:center;justify-content:center;
-  padding:1.2rem;opacity:0;pointer-events:none;transition:.3s;cursor:zoom-out}
-#featLightbox.show{opacity:1;pointer-events:auto}
-#featLightbox img{max-width:96%;max-height:90%;border-radius:14px;border:3px solid var(--gold);box-shadow:0 30px 80px rgba(0,0,0,.8);cursor:default}
-.lb-close{position:absolute;top:1rem;left:1rem;width:44px;height:44px;border-radius:50%;border:none;
-  background:#ffffff22;color:#fff;font-size:1.2rem;cursor:pointer;transition:.25s}
-.lb-close:hover{background:#e53e3e;transform:rotate(90deg)}
-.lb-name{position:absolute;bottom:1.2rem;inset-inline:0;text-align:center;color:var(--gold2);font-weight:900;font-size:1.05rem;text-shadow:0 2px 8px rgba(0,0,0,.8)}
 @media(max-width:560px){
   .f-arrow{width:44px;height:44px;font-size:1rem}
   .f-right{right:2%}
@@ -352,19 +343,12 @@ footer .credit a::after{content:"↗";font-size:.7rem;opacity:.7}
   <div class="f-stage" id="featStage">
     <button class="f-arrow f-right" onclick="manualNav(-1)" aria-label="السابق">❯</button>
     <div class="f-img-box" id="featAnim">
-      <img id="featImg" src="" alt="" onclick="zoomFeatured()">
+      <img id="featImg" src="" alt="">
     </div>
     <button class="f-arrow f-left" onclick="manualNav(1)" aria-label="التالي">❮</button>
   </div>
   <div class="f-dots" id="featDots"></div>
   <button class="f-menu-btn" onclick="closeFeatured()">تصفح قائمة الطعام</button>
-</div>
-
-<!-- ===== التكبير ===== -->
-<div id="featLightbox" onclick="closeFeatLightbox()">
-  <button class="lb-close" aria-label="إغلاق">✕</button>
-  <img id="lbImg" src="" alt="">
-  <div class="lb-name" id="lbName"></div>
 </div>
 
 <div id="overlay" onclick="closeCart()"></div>
@@ -414,6 +398,11 @@ const FEATURED = [
   {n:'أرز بلبن', img:'img/f13.png'}
 ];
 
+function featPlaceholder(name){
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="800" height="600" fill="#f7f1e6"/><circle cx="400" cy="250" r="120" fill="#e8dcc9"/><text x="400" y="295" font-size="110" text-anchor="middle">🍽️</text><text x="400" y="460" font-size="42" text-anchor="middle" fill="#4d231b" font-family="Cairo,sans-serif" font-weight="bold">${name}</text><text x="400" y="520" font-size="26" text-anchor="middle" fill="#8a6f63" font-family="Cairo,sans-serif">ركن البشوات ⭐</text></svg>`;
+  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+
 /* ===== شاشة الترحيب + العداد (الزيارة الأولى فقط) ===== */
 let introFinished = false;
 const MIN_INTRO_MS = 15000; /* ١٥ ثانية حد أدنى لقراءة رسالة الترحيب */
@@ -427,7 +416,6 @@ if(firstVisit){
     document.body.style.overflow='hidden';
   }, 250);
 
-  /* العداد يتتبع تحميل كل الصور والملفات */
   const ringFg = document.getElementById('ringFg');
   const loadPct = document.getElementById('loadPct');
   const loaderTxt = document.getElementById('loaderTxt');
@@ -454,10 +442,9 @@ if(firstVisit){
     im.onload = im.onerror = ()=>{ imgLoaded++; tick(); };
     im.src = src;
   });
-  /* حد أمان ٢٥ ثانية في حال بطء الإنترنت الشديد */
   setTimeout(()=>{ imgLoaded=totalAssets; winLoaded=true; tick(); }, 25000);
 } else {
-  /* الزيارات التالية: بدون ترحيب وبدون عداد — تجهيز صامت للصور ثم فتح المميزة */
+  /* الزيارات التالية: بدون ترحيب وبدون عداد — تجهيز صامت ثم فتح المميزة */
   let loaded = 0, opened = false;
   const open = ()=>{ if(!opened){ opened=true; openFeatured(); } };
   FEATURED.forEach(f=>{
@@ -465,10 +452,9 @@ if(firstVisit){
     im.onload = im.onerror = ()=>{ loaded++; if(loaded>=FEATURED.length) open(); };
     im.src = f.img;
   });
-  setTimeout(open, 3000); /* حد أقصى ٣ ثواني */
+  setTimeout(open, 3000);
 }
 
-/* إغلاق الترحيب وفتح المميزة — مع إتمام الـ ١٥ ثانية */
 function finishIntro(){
   if(introFinished) return;
   introFinished = true;
@@ -479,7 +465,6 @@ function finishIntro(){
     setTimeout(openFeatured, 400);
   }, wait);
 }
-/* تخطي والذهاب للمنيو مباشرة */
 function skipIntro(){
   if(introFinished) return;
   introFinished = true;
@@ -493,11 +478,21 @@ let featIndex = 0, featTimer = null, featAuto = true;
 const featImg = document.getElementById('featImg');
 const featAnim = document.getElementById('featAnim');
 
-function featPlaceholder(name){
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="800" height="600" fill="#f7f1e6"/><circle cx="400" cy="250" r="120" fill="#e8dcc9"/><text x="400" y="295" font-size="110" text-anchor="middle">🍽️</text><text x="400" y="460" font-size="42" text-anchor="middle" fill="#4d231b" font-family="Cairo,sans-serif" font-weight="bold">${name}</text><text x="400" y="520" font-size="26" text-anchor="middle" fill="#8a6f63" font-family="Cairo,sans-serif">ركن البشوات ⭐</text></svg>`;
-  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+/* تجهيز مسبق لجميع الصور لضمان الترتيب ومنع وميض الصورة السابقة */
+const featReady = {};
+FEATURED.forEach(f=>{
+  const im = new Image();
+  im.onload = ()=>{ featReady[f.img] = f.img; };
+  im.onerror = ()=>{ featReady[f.img] = featPlaceholder(f.n); };
+  im.src = f.img;
+});
+function withFeatSrc(item, cb){
+  if(featReady[item.img]){ cb(featReady[item.img]); return; }
+  const im = new Image();
+  im.onload = ()=>{ featReady[item.img] = item.img; cb(item.img); };
+  im.onerror = ()=>{ const ph = featPlaceholder(item.n); featReady[item.img] = ph; cb(ph); };
+  im.src = item.img;
 }
-featImg.addEventListener('error', ()=>{ featImg.src = featPlaceholder(FEATURED[featIndex].n); });
 
 const featDots = document.getElementById('featDots');
 FEATURED.forEach((_,i)=>{
@@ -510,12 +505,15 @@ FEATURED.forEach((_,i)=>{
 function showFeat(i, dir){
   featIndex = (i + FEATURED.length) % FEATURED.length;
   const item = FEATURED[featIndex];
-  featAnim.classList.remove('anim-next','anim-prev');
-  void featAnim.offsetWidth;
-  featAnim.classList.add(dir==='prev' ? 'anim-prev' : 'anim-next');
-  featImg.src = item.img;
-  featImg.alt = item.n;
   document.querySelectorAll('.f-dot').forEach((d,di)=> d.classList.toggle('active', di===featIndex));
+  /* لا يتم التبديل إلا بعد جهوزية الصورة التالية تماماً */
+  withFeatSrc(item, src=>{
+    featImg.src = src;
+    featImg.alt = item.n;
+    featAnim.classList.remove('anim-next','anim-prev');
+    void featAnim.offsetWidth;
+    featAnim.classList.add(dir==='prev' ? 'anim-prev' : 'anim-next');
+  });
 }
 function startFeatAuto(){
   stopFeatAuto();
@@ -537,25 +535,12 @@ function openFeatured(){
   startFeatAuto();
 }
 function closeFeatured(){
-  closeFeatLightbox();
   document.getElementById('featured').classList.remove('show');
   document.body.style.overflow='';
   stopFeatAuto();
 }
-function zoomFeatured(){
-  document.getElementById('lbImg').src = featImg.src;
-  document.getElementById('lbName').textContent = FEATURED[featIndex].n;
-  document.getElementById('featLightbox').classList.add('show');
-  stopFeatAuto();
-}
-function closeFeatLightbox(){
-  const lb = document.getElementById('featLightbox');
-  if(lb.classList.contains('show')){
-    lb.classList.remove('show');
-    if(featAuto && document.getElementById('featured').classList.contains('show')) startFeatAuto();
-  }
-}
 
+/* السحب باللمس (يدوي أيضاً) */
 let touchX = null;
 document.getElementById('featStage').addEventListener('touchstart', e=>{ touchX = e.touches[0].clientX; }, {passive:true});
 document.getElementById('featStage').addEventListener('touchend', e=>{
@@ -565,9 +550,10 @@ document.getElementById('featStage').addEventListener('touchend', e=>{
   touchX = null;
 }, {passive:true});
 
+/* الكيبورد */
 document.addEventListener('keydown', e=>{
   if(!document.getElementById('featured').classList.contains('show')) return;
-  if(e.key==='Escape'){ document.getElementById('featLightbox').classList.contains('show') ? closeFeatLightbox() : closeFeatured(); }
+  if(e.key==='Escape') closeFeatured();
   else if(e.key==='ArrowLeft') manualNav(1);
   else if(e.key==='ArrowRight') manualNav(-1);
 });
