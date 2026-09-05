@@ -119,9 +119,9 @@ body{font-family:'Cairo',sans-serif;background:var(--cream);color:var(--ink);
   .f-dots{gap:.8rem}
   .f-dot{width:12px;height:12px}
 }
-/* ===== التصنيفات ===== */
+/* ===== التصنيفات (شريط متحرك انسيابي) ===== */
 .cats{position:sticky;top:66px;z-index:40;background:var(--cream);padding:.7rem 1rem;display:flex;gap:.5rem;
-  overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:none;transition:.3s}
+  overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:none;transition:.3s;will-change:scroll-position}
 .cats::-webkit-scrollbar{display:none}
 .cats.searching{opacity:.4;pointer-events:none}
 .chip{flex-shrink:0;background:#fff;border:1.5px solid var(--line);border-radius:50px;padding:.45rem 1.1rem;
@@ -665,12 +665,56 @@ const searchStats = document.getElementById('searchStats'), statsCount = documen
 let currentSection = 0;
 let isSearching = false;
 
+/* ===== حركة شريط الأقسام الانسيابية (ذهاب وإياب دائم) ===== */
+let catsDir = 1, catsPauseUntil = 0, catsLast = performance.now(), catsSign = 0;
+let catsPos = 0, catsSynced = false; /* عدّاد داخلي دقيق لا يتأثر بتقريب المتصفح */
+const CATS_SPEED = 28; /* بكسل/ثانية — حركة هادئة */
+function pauseCats(ms){ catsPauseUntil = performance.now() + (ms || 3000); }
+(function initCatsMarquee(){
+  function tickCats(now){
+    const max = cats.scrollWidth - cats.clientWidth;
+    if(max > 5){
+      /* اكتشاف اتجاه التمرير في RTL تلقائياً */
+      if(!catsSign){
+        cats.scrollLeft = -1;
+        catsSign = (cats.scrollLeft < 0) ? -1 : 1;
+        cats.scrollLeft = 0;
+        catsPos = 0;
+        catsSynced = true;
+      }
+      if(now >= catsPauseUntil){
+        /* مزامنة الموضع بعد أي تدخل يدوي أثناء الإيقاف */
+        if(!catsSynced){
+          catsPos = Math.min(max, Math.abs(cats.scrollLeft));
+          catsSynced = true;
+        }
+        const dt = Math.min(.05, (now - catsLast)/1000);
+        catsPos += dt * CATS_SPEED * catsDir;
+        if(catsPos >= max){ catsPos = max; catsDir = -1; }
+        else if(catsPos <= 0){ catsPos = 0; catsDir = 1; }
+        cats.scrollLeft = catsSign * catsPos;
+      } else {
+        catsSynced = false; /* أثناء الإيقاف قد يتغيّر الموضع يدوياً */
+      }
+    }
+    catsLast = now;
+    requestAnimationFrame(tickCats);
+  }
+  requestAnimationFrame(tickCats);
+})();
+/* توقف ٣ ثواني عند أي تفاعل يدوي مع الشريط */
+cats.addEventListener('pointerdown', ()=> pauseCats(3000), {passive:true});
+cats.addEventListener('touchstart', ()=> pauseCats(3000), {passive:true});
+cats.addEventListener('wheel', ()=> pauseCats(3000), {passive:true});
+
 MENU.forEach((sec,si)=>{
   const chip = document.createElement('button');
   chip.className='chip'; chip.textContent = sec.i+' '+sec.t;
   chip.onclick = ()=> {
     if(isSearching) clearSearch();
     showSection(si, true);
+    pauseCats(3000); /* يتوقف ٣ ثواني بعد الاختيار ثم يستأنف */
+    chip.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
   };
   cats.appendChild(chip);
 
