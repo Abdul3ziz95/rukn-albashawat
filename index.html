@@ -210,7 +210,6 @@ footer{background:var(--dark);color:#e9d5b5;padding:2.2rem 1rem 5.5rem;text-alig
 .branches-toggle.open .toggle-text{color:#fff}
 .branches-content{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.4,.0,.2,1), opacity .3s ease, margin-top .3s ease;opacity:0;margin-top:0}
 .branches-content.open{opacity:1;margin-top:.8rem}
-/* بطاقة الفرع الحديثة */
 .branch{background:#ffffff0d;border:1px solid #ffffff1f;border-radius:18px;margin:.6rem 0;padding:1rem 1rem .9rem;transition:.3s}
 .branch:hover{background:#ffffff12;border-color:var(--gold)}
 .branch-head{display:flex;align-items:center;gap:.7rem;margin-bottom:.85rem;text-align:start}
@@ -494,12 +493,12 @@ function skipIntro(){
 }
 document.getElementById('welcome').addEventListener('click', e=>{ if(e.target.id==='welcome') skipIntro(); });
 
-/* ===== منطق الأصناف المميزة ===== */
-let featIndex = 0, featTimer = null, featAuto = true;
+/* ===== منطق الأصناف المميزة (نظام تسلسلي صارم يمنع التكرار وخلل الترتيب) ===== */
+let featIndex = 0, featAuto = true, featToken = 0, autoTimeout = null;
 const featImg = document.getElementById('featImg');
 const featAnim = document.getElementById('featAnim');
 
-/* تجهيز مسبق لجميع الصور لضمان الترتيب ومنع وميض الصورة السابقة */
+/* تجهيز مسبق لجميع الصور */
 const featReady = {};
 FEATURED.forEach(f=>{
   const im = new Image();
@@ -519,39 +518,49 @@ const featDots = document.getElementById('featDots');
 FEATURED.forEach((_,i)=>{
   const d = document.createElement('button');
   d.className='f-dot'; d.setAttribute('aria-label','صنف '+(i+1));
-  d.onclick = ()=>{ featAuto=false; stopFeatAuto(); showFeat(i, i>featIndex?'next':'prev'); };
+  d.onclick = ()=>{ featAuto=false; stopFeatAuto(); showFeat(i, i>featIndex?'next':'prev', false); };
   featDots.appendChild(d);
 });
 
-function showFeat(i, dir){
+/* العرض التسلسلي: لا يُعرض صنف إلا بعد جهوزيته، وأي طلب قديم يُلغى تلقائياً */
+function showFeat(i, dir, fromAuto){
   featIndex = (i + FEATURED.length) % FEATURED.length;
   const item = FEATURED[featIndex];
-  document.querySelectorAll('.f-dot').forEach((d,di)=> d.classList.toggle('active', di===featIndex));
+  const myToken = ++featToken;
   withFeatSrc(item, src=>{
+    if(myToken !== featToken) return; /* طلب قديم — تجاهله لمنع خلل الترتيب */
     featImg.src = src;
     featImg.alt = item.n;
+    document.querySelectorAll('.f-dot').forEach((d,di)=> d.classList.toggle('active', di===featIndex));
     featAnim.classList.remove('anim-next','anim-prev');
     void featAnim.offsetWidth;
     featAnim.classList.add(dir==='prev' ? 'anim-prev' : 'anim-next');
+    /* التالي يُجدول فقط بعد ظهور الحالي فعلياً */
+    if(fromAuto && featAuto) scheduleAuto();
   });
+}
+function scheduleAuto(){
+  clearTimeout(autoTimeout);
+  autoTimeout = setTimeout(()=> showFeat(featIndex+1,'next',true), 3500);
+}
+function stopFeatAuto(){
+  clearTimeout(autoTimeout);
+  autoTimeout = null;
 }
 function startFeatAuto(){
   stopFeatAuto();
-  featTimer = setInterval(()=> showFeat(featIndex+1,'next'), 3500);
-}
-function stopFeatAuto(){
-  if(featTimer){ clearInterval(featTimer); featTimer=null; }
+  scheduleAuto();
 }
 function manualNav(d){
   featAuto = false;
   stopFeatAuto();
-  showFeat(featIndex+d, d<0?'prev':'next');
+  showFeat(featIndex+d, d<0?'prev':'next', false);
 }
 function openFeatured(){
   document.getElementById('featured').classList.add('show');
   document.body.style.overflow='hidden';
   featAuto = true;
-  showFeat(featIndex,'next');
+  showFeat(featIndex,'next',false);
   startFeatAuto();
 }
 function closeFeatured(){
